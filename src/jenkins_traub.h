@@ -2,22 +2,22 @@
 #define ROOTF_H
 
 /*
- *                     INPUT:
- *                     opr - double precision vector of real coefficients in order of
- *                          decreasing powers.
- *                     opi - double precision vector of imaginary coefficients in order of
- *                          decreasing powers.
- *                     degree - integer degree of polynomial
+ *     INPUT:
+ *     opr - double precision vector of real coefficients in order of
+ *          decreasing powers.
+ *     opi - double precision vector of imaginary coefficients in order of
+ *          decreasing powers.
+ *     degree - integer degree of polynomial
  *
- *                     OUTPUT:
- *                     zeror,zeroi - output double precision vectors of the
- *                          real and imaginary parts of the zeros.
- *                            to be consistent with rpoly.cpp the zeros is inthe index
- *                            [0..max_degree-1]
+ *     OUTPUT:
+ *     zeror,zeroi - output double precision vectors of the
+ *          real and imaginary parts of the zeros.
+ *            to be consistent with rpoly.cpp the zeros is inthe index
+ *            [0..max_degree-1]
  *
- *                     RETURN:
- *                     returnval:   -1 if leading coefficient is zero, otherwise
- *                          number of roots found. 
+ *     RETURN:
+ *     returnval:   -1 if leading coefficient is zero, otherwise
+ *          number of roots found.
 */
 
 
