@@ -12,6 +12,13 @@
      delete (x);   \
   }while(0)        \
 
+#define FREE_ARR(x)  \
+  do                 \
+  {                  \
+    if ((x))         \
+      delete[] (x);  \
+  }while (0)         \
+
 
 #define CHAR_BUF_LEN 4096
 

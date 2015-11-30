@@ -75,12 +75,11 @@ private:
 
 public:
 
-  jenkins_traub (int _degree);
   ~jenkins_traub ();
 
+  int init (int _degree);
+  int check ();
   int cpoly (const double *opr, const double *opi, double *zeror, double *zeroi);
 };
-
-
 
 #endif /* ROOTF_H */

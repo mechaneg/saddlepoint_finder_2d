@@ -1,11 +1,33 @@
+/// \file jenkins_traub.cpp
+
 #include "jenkins_traub.h"
+#include "common_defines.h"
 
 #include <cctype>
 #include <cmath>
 #include <cfloat>
 
-jenkins_traub::jenkins_traub (int _degree) : degree (_degree)
+jenkins_traub::~jenkins_traub ()
 {
+  FREE_ARR (pr);
+  FREE_ARR (pi);
+  FREE_ARR (hr);
+  FREE_ARR (hi);
+  FREE_ARR (qpr);
+  FREE_ARR (qpi);
+  FREE_ARR (qhr);
+  FREE_ARR (qhi);
+  FREE_ARR (shr);
+  FREE_ARR (shi);
+}
+
+int jenkins_traub::init (int _degree)
+{
+  degree = _degree;
+
+  if (check () < 0)
+    return -1;
+
   pr  = new double[degree + 1];
   pi  = new double[degree + 1];
   hr  = new double[degree + 1];
@@ -16,22 +38,16 @@ jenkins_traub::jenkins_traub (int _degree) : degree (_degree)
   qhi = new double[degree + 1];
   shr = new double[degree + 1];
   shi = new double[degree + 1];
+
+  return 0;
 }
 
-jenkins_traub::~jenkins_traub ()
+int jenkins_traub::check ()
 {
-  delete[] pr;
-  delete[] pi;
-  delete[] hr;
-  delete[] hi;
-  delete[] qpr;
-  delete[] qpi;
-  delete[] qhr;
-  delete[] qhi;
-  delete[] shr;
-  delete[] shi;
+  if (degree <= 0)
+    return -1;
+  return 0;
 }
-
 
 int jenkins_traub::cpoly (const double *opr, const double *opi, double *zeror, double *zeroi)
 {
@@ -223,39 +239,41 @@ void jenkins_traub::fxshft (int l2, double *zr, double *zi, int *conv)
       // Test for convergence unless stage 3 has failed once or this
       // is the last H Polynomial
       if (!(bol || !test || j == 12))
-         if (cmod (tr - otr, ti - oti) < 0.5 * cmod (*zr, *zi))
-           {
-             if( pasd )
-               {
-                 // The weak convergence test has been passwed twice, start the third stage
-                 // Iteration, after saving the current H polynomial and shift
-                 for (i = 0; i < n; i++)
-                   {
-                     shr[i] = hr[i];
-                     shi[i] = hi[i];
-                   }
-                 svsr = sr;
-                 svsi = si;
-                 vrshft (10, zr, zi, conv);
-                 if (*conv) return;
+        {
+          if (cmod (tr - otr, ti - oti) < 0.5 * cmod (*zr, *zi))
+            {
+              if( pasd )
+                {
+                  // The weak convergence test has been passwed twice, start the third stage
+                  // Iteration, after saving the current H polynomial and shift
+                  for (i = 0; i < n; i++)
+                    {
+                      shr[i] = hr[i];
+                      shi[i] = hi[i];
+                    }
+                  svsr = sr;
+                  svsi = si;
+                  vrshft (10, zr, zi, conv);
+                  if (*conv) return;
 
-                 //The iteration failed to converge. Turn off testing and restore h,s,pv and T
-                 test = 0;
-                 for (i = 0; i < n; i++)
-                   {
-                     hr[i] = shr[i];
-                     hi[i] = shi[i];
-                   }
-                 sr = svsr;
-                 si = svsi;
-                 polyev (nn, sr, si, pr, pi, qpr, qpi, &pvr, &pvi);
-                 calct (&bol);
-                 continue;
-               }
-             pasd = 1;
-           }
-         else
-           pasd = 0;
+                  //The iteration failed to converge. Turn off testing and restore h,s,pv and T
+                  test = 0;
+                  for (i = 0; i < n; i++)
+                    {
+                      hr[i] = shr[i];
+                      hi[i] = shi[i];
+                    }
+                  sr = svsr;
+                  si = svsi;
+                  polyev (nn, sr, si, pr, pi, qpr, qpi, &pvr, &pvi);
+                  calct (&bol);
+                  continue;
+                }
+              pasd = 1;
+            }
+          else
+            pasd = 0;
+        }
     }
 
   // Attempt an iteration with final H polynomial from second stage
@@ -586,7 +604,7 @@ double jenkins_traub::cmod (double r, double i)
 //
 void jenkins_traub::mcon (double *eta, double *infiny, double *smalno, double *base)
 {
-  *base = DBL_RADIX;
+  *base = FLT_RADIX;
   *eta = DBL_EPSILON;
   *infiny = DBL_MAX;
   *smalno = DBL_MIN;

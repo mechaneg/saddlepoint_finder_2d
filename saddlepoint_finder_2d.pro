@@ -1,4 +1,4 @@
-QMAKE_CXXFLAGS += -std=c++11 -Werror -Wunused
+QMAKE_CXXFLAGS += -std=c++11 -Werror -Wno=comment
 
 QT += core
 
