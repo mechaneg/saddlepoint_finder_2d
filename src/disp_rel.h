@@ -28,11 +28,11 @@ namespace disp
   complex k1 (const complex &om, const params &param);
   complex k0 (const complex &om, const params &param);
 
-  void calc_om (std::valarray<complex<double>>& om, const complex &k, const params &param);
-  //void calc_k(std::valarray<complex<double>> k, complex<double> om, const param_t& param);
+  void calc_om (std::valarray<complex<double>> &om, const complex &k, const params &param);
+  void calc_k  (std::valarray<complex<double>> &k, const complex &om, const params& param);
 
-  complex F (const complex &om, const complex &k, const params &param);
-  complex F (const complex &om, const complex &k, double U, const params &param);
+  complex F  (const complex &om, const complex &k, const params &param);
+  complex F  (const complex &om, const complex &k, double U, const params &param);
   complex F2 (const complex &om, const complex &k, const params &param);
   complex F2 (const complex &om, const complex &k, double U, const params &param);
 }

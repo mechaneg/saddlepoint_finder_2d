@@ -1,185 +1,191 @@
-#include "Jenkins_Traub.h"
+#include "jenkins_traub.h"
 
-#include <iostream>
-#include <fstream>
 #include <cctype>
 #include <cmath>
 #include <cfloat>
 
-int JT::cpoly( const double *opr, const double *opi, int degree, double *zeror, double *zeroi ) 
-   {
-   int cnt1, cnt2, idnn2, i, conv;
-   double xx, yy, cosr, sinr, smalno, base, xxx, zr, zi, bnd;
+jenkins_traub::jenkins_traub (int _degree) : degree (_degree)
+{
+  pr  = new double[degree + 1];
+  pi  = new double[degree + 1];
+  hr  = new double[degree + 1];
+  hi  = new double[degree + 1];
+  qpr = new double[degree + 1];
+  qpi = new double[degree + 1];
+  qhr = new double[degree + 1];
+  qhi = new double[degree + 1];
+  shr = new double[degree + 1];
+  shi = new double[degree + 1];
+}
 
-   mcon( &eta, &infin, &smalno, &base );
-   are = eta;
-   mre = 2.0 * sqrt( 2.0 ) * eta;
-   xx = 0.70710678;
-   yy = -xx;
-   cosr = -0.060756474;
-   sinr = -0.99756405;
-   nn = degree;  
+jenkins_traub::~jenkins_traub ()
+{
+  delete[] pr;
+  delete[] pi;
+  delete[] hr;
+  delete[] hi;
+  delete[] qpr;
+  delete[] qpi;
+  delete[] qhr;
+  delete[] qhi;
+  delete[] shr;
+  delete[] shi;
+}
 
-   // Algorithm fails if the leading coefficient is zero
-   if( opr[ 0 ] == 0 && opi[ 0 ] == 0 )
-      return -1;
 
-   // Allocate arrays
-   pr = new double [ degree+1 ];
-   pi = new double [ degree+1 ];
-   hr = new double [ degree+1 ];
-   hi = new double [ degree+1 ];
-   qpr= new double [ degree+1 ];
-   qpi= new double [ degree+1 ];
-   qhr= new double [ degree+1 ];
-   qhi= new double [ degree+1 ];
-   shr= new double [ degree+1 ];
-   shi= new double [ degree+1 ];
+int jenkins_traub::cpoly (const double *opr, const double *opi, double *zeror, double *zeroi)
+{
+  int cnt1, cnt2, idnn2, i, conv;
+  double xx, yy, cosr, sinr, smalno, base, xxx, zr, zi, bnd;
 
-   // Remove the zeros at the origin if any
-   while( opr[ nn ] == 0 && opi[ nn ] == 0 )
-      {
-      idnn2 = degree - nn;
-      zeror[ idnn2 ] = 0;
-      zeroi[ idnn2 ] = 0;
+  int degree_loc = degree;
+
+  mcon (&eta, &infin, &smalno, &base);
+  are = eta;
+  mre = 2.0 * sqrt ( 2.0 ) * eta;
+  xx = 0.70710678;
+  yy = -xx;
+  cosr = -0.060756474;
+  sinr = -0.99756405;
+  nn = degree;
+
+  // Algorithm fails if the leading coefficient is zero
+  if (opr[0] == 0 && opi[0] == 0)
+    return -1;
+
+  /// Remove the zeros at the origin if any
+  while (opr[nn] == 0 && opi[nn] == 0)
+    {
+      idnn2 = degree_loc - nn;
+      zeror[idnn2] = 0;
+      zeroi[idnn2] = 0;
       nn--;
-      }
+    }
 
-   // Make a copy of the coefficients
-   for( i = 0; i <= nn; i++ )
-      {
-		  //std::cout<<opr[i];
-      pr[ i ] = opr[ i ];
-      pi[ i ] = opi[ i ];
-      shr[ i ] = cmod( pr[ i ], pi[ i ] );
-      }
+  /// Make a copy of the coefficients
+  for (i = 0; i <= nn; i++)
+    {
+      pr[i]  = opr[i];
+      pi[i]  = opi[i];
+      shr[i] = cmod (pr[i], pi[i]);
+    }
 
-   // Scale the polynomial
-   bnd = scale( nn, shr, eta, infin, smalno, base );
-   if( bnd != 1 )
-      for( i = 0; i <= nn; i++ )
-         {
-         pr[ i ] *= bnd;
-         pi[ i ] *= bnd;
-         }
+  // Scale the polynomial
+  bnd = scale (nn, shr, eta, infin, smalno, base);
+  if (bnd != 1)
+    {
+      for (i = 0; i <= nn; i++)
+        {
+          pr[i] *= bnd;
+          pi[i] *= bnd;
+        }
+    }
 
-search: 
-   if( nn <= 1 )
-      {
-      cdivid( -pr[ 1 ], -pi[ 1 ], pr[ 0 ], pi[ 0 ], &zeror[ degree-1 ], &zeroi[ degree-1 ] );
-      goto finish;
-      }
+  search:
+  if (nn <= 1)
+   {
+     cdivid (-pr[1], -pi[1], pr[0], pi[0], &zeror[degree_loc - 1], &zeroi[degree_loc - 1]);
+     goto finish;
+   }
 
-   // Calculate bnd, alower bound on the modulus of the zeros
-   for( i = 0; i<= nn; i++ )
-      shr[ i ] = cmod( pr[ i ], pi[ i ] );
+  // Calculate bnd, alower bound on the modulus of the zeros
+  for (i = 0; i <= nn; i++)
+    shr[i] = cmod (pr[i], pi[i]);
 
-   cauchy( nn, shr, shi, &bnd );
-   
-   // Outer loop to control 2 Major passes with different sequences of shifts
-   for( cnt1 = 1; cnt1 <= 2; cnt1++ )
-      {
+  cauchy (nn, shr, shi, &bnd);
+
+  // Outer loop to control 2 Major passes with different sequences of shifts
+  for (cnt1 = 1; cnt1 <= 2; cnt1++)
+    {
       // First stage  calculation , no shift
       noshft( 5 );
 
       // Inner loop to select a shift
-      for( cnt2 = 1; cnt2 <= 9; cnt2++ )
-         {
-         // Shift is chosen with modulus bnd and amplitude rotated by 94 degree from the previous shif
-         xxx = cosr * xx - sinr * yy;
-         yy = sinr * xx + cosr * yy;
-         xx = xxx;
-         sr = bnd * xx;
-         si = bnd * yy;
+      for (cnt2 = 1; cnt2 <= 9; cnt2++)
+        {
+          // Shift is chosen with modulus bnd and amplitude rotated by 94 degree from the previous shif
+          xxx = cosr * xx - sinr * yy;
+          yy = sinr * xx + cosr * yy;
+          xx = xxx;
+          sr = bnd * xx;
+          si = bnd * yy;
 
-         // Second stage calculation, fixed shift
-         fxshft( 10 * cnt2, &zr, &zi, &conv );
-         if( conv )
+          // Second stage calculation, fixed shift
+          fxshft (10 * cnt2, &zr, &zi, &conv);
+          if (conv)
             {
-            // The second stage jumps directly to the third stage ieration
-            // If successful the zero is stored and the polynomial deflated
-            idnn2 = degree - nn;
-            zeror[ idnn2 ] = zr;
-            zeroi[ idnn2 ] = zi;
-            nn--;
-            for( i = 0; i <= nn; i++ )
-               {
-               pr[ i ] = qpr[ i ];
-               pi[ i ] = qpi[ i ];
-               }
-            goto search;
+              // The second stage jumps directly to the third stage ieration
+              // If successful the zero is stored and the polynomial deflated
+              idnn2 = degree_loc - nn;
+              zeror[idnn2] = zr;
+              zeroi[idnn2] = zi;
+              nn--;
+              for(i = 0; i <= nn; i++)
+                {
+                  pr[i] = qpr[i];
+                  pi[i] = qpi[i];
+                }
+              goto search;
             }
-         // If the iteration is unsuccessful another shift is chosen
-         }
-      // if 9 shifts fail, the outer loop is repeated with another sequence of shifts
-      }
+           // If the iteration is unsuccessful another shift is chosen
+        }
+       // if 9 shifts fail, the outer loop is repeated with another sequence of shifts
+    }
 
-   // The zerofinder has failed on two major passes
-   // return empty handed with the number of roots found (less than the original degree)
-   degree -= nn;
+  // The zerofinder has failed on two major passes
+  // return empty handed with the number of roots found (less than the original degree)
+  degree_loc -= nn;
 
 finish:
-   // Deallocate arrays
-   delete [] pr;
-   delete [] pi;
-   delete [] hr;
-   delete [] hi;
-   delete [] qpr;
-   delete [] qpi;
-   delete [] qhr;
-   delete [] qhi;
-   delete [] shr;
-   delete [] shi;
-
-   return degree;       
-   }
+  return degree_loc;
+}
 
 // COMPUTES  THE DERIVATIVE  POLYNOMIAL AS THE INITIAL H
 // POLYNOMIAL AND COMPUTES L1 NO-SHIFT H POLYNOMIALS.
 //
-static void JT::noshft( const int l1 )
-   {
-   int i, j, jj, n, nm1;
-   double xni, t1, t2;
+void jenkins_traub::noshft (int l1)
+{
+  int i, j, jj, n, nm1;
+  double xni, t1, t2;
 
-   n = nn;
-   nm1 = n - 1;
-   for( i = 0; i < n; i++ )
-      {
+  n = nn;
+  nm1 = n - 1;
+  for (i = 0; i < n; i++)
+    {
       xni = nn - i;
-      hr[ i ] = xni * pr[ i ] / n;
-      hi[ i ] = xni * pi[ i ] / n;
-      }
-   for( jj = 1; jj <= l1; jj++ )
-      {
-      if( cmod( hr[ n - 1 ], hi[ n - 1 ] ) > eta * 10 * cmod( pr[ n - 1 ], pi[ n - 1 ] ) )
-         {
-         cdivid( -pr[ nn ], -pi[ nn ], hr[ n - 1 ], hi[ n - 1 ], &tr, &ti );
-         for( i = 0; i < nm1; i++ )
+      hr[i] = xni * pr[i] / n;
+      hi[i] = xni * pi[i] / n;
+    }
+  for(jj = 1; jj <= l1; jj++)
+    {
+      if (cmod (hr[n - 1], hi[n - 1]) > eta * 10 * cmod (pr[n - 1], pi[n - 1]))
+        {
+          cdivid (-pr[nn], -pi[nn], hr[n - 1], hi[n - 1], &tr, &ti);
+          for (i = 0; i < nm1; i++)
             {
-            j = nn - i - 1;
-            t1 = hr[ j - 1 ];
-            t2 = hi[ j - 1 ];
-            hr[ j ] = tr * t1 - ti * t2 + pr[ j ];
-            hi[ j ] = tr * t2 + ti * t1 + pi[ j ];
+              j  = nn - i - 1;
+              t1 = hr[j - 1];
+              t2 = hi[j - 1];
+              hr[j] = tr * t1 - ti * t2 + pr[j];
+              hi[j] = tr * t2 + ti * t1 + pi[j];
             }
-         hr[ 0 ] = pr[ 0 ];
-         hi[ 0 ] = pi[ 0 ];
-         }
+          hr[0] = pr[0];
+          hi[0] = pi[0];
+        }
       else
-         {
-         // If the constant term is essentially zero, shift H coefficients
-         for( i = 0; i < nm1; i++ )
+        {
+          // If the constant term is essentially zero, shift H coefficients
+          for (i = 0; i < nm1; i++)
             {
-            j = nn - i - 1;
-            hr[ j ] = hr[ j - 1 ];
-            hi[ j ] = hi[ j - 1 ];
+             j = nn - i - 1;
+             hr[j] = hr[j - 1];
+             hi[j] = hi[j - 1];
             }
-         hr[ 0 ] = 0;
-         hi[ 0 ] = 0;
-         }
-      }
-   }
+          hr[0] = 0;
+          hi[0] = 0;
+        }
+    }
+}
 
 // COMPUTES L2 FIXED-SHIFT H POLYNOMIALS AND TESTS FOR CONVERGENCE.
 // INITIATES A VARIABLE-SHIFT ITERATION AND RETURNS WITH THE
@@ -188,23 +194,23 @@ static void JT::noshft( const int l1 )
 // ZR,ZI - APPROXIMATE ZERO IF CONV IS .TRUE.
 // CONV  - LOGICAL INDICATING CONVERGENCE OF STAGE 3 ITERATION
 //
-static void JT::fxshft( const int l2, double *zr, double *zi, int *conv )
-   {
-   int i, j, n;
-   int test, pasd, bol;
-   double otr, oti, svsr, svsi;
+void jenkins_traub::fxshft (int l2, double *zr, double *zi, int *conv)
+{
+  int i, j, n;
+  int test, pasd, bol;
+  double otr, oti, svsr, svsi;
 
-   n = nn;
-   polyev( nn, sr, si, pr, pi, qpr, qpi, &pvr, &pvi );
-   test = 1;
-   pasd = 0;
+  n = nn;
+  polyev (nn, sr, si, pr, pi, qpr, qpi, &pvr, &pvi);
+  test = 1;
+  pasd = 0;
 
-   // Calculate first T = -P(S)/H(S)
-   calct( &bol );
+  // Calculate first T = -P(S)/H(S)
+  calct (&bol);
 
-   // Main loop for second stage
-   for( j = 1; j <= l2; j++ )
-      {
+  // Main loop for second stage
+  for (j = 1; j <= l2; j++)
+    {
       otr = tr;
       oti = ti;
 
@@ -216,45 +222,45 @@ static void JT::fxshft( const int l2, double *zr, double *zi, int *conv )
 
       // Test for convergence unless stage 3 has failed once or this
       // is the last H Polynomial
-      if( !( bol || !test || j == 12 ) )
-         if( cmod( tr - otr, ti - oti ) < 0.5 * cmod( *zr, *zi ) )
-            {
-            if( pasd )
+      if (!(bol || !test || j == 12))
+         if (cmod (tr - otr, ti - oti) < 0.5 * cmod (*zr, *zi))
+           {
+             if( pasd )
                {
-               // The weak convergence test has been passwed twice, start the third stage
-               // Iteration, after saving the current H polynomial and shift
-               for( i = 0; i < n; i++ )
-                  {
-                  shr[ i ] = hr[ i ];
-                  shi[ i ] = hi[ i ];
-                  }
-               svsr = sr;
-               svsi = si;
-               vrshft( 10, zr, zi, conv );
-               if( *conv ) return;
+                 // The weak convergence test has been passwed twice, start the third stage
+                 // Iteration, after saving the current H polynomial and shift
+                 for (i = 0; i < n; i++)
+                   {
+                     shr[i] = hr[i];
+                     shi[i] = hi[i];
+                   }
+                 svsr = sr;
+                 svsi = si;
+                 vrshft (10, zr, zi, conv);
+                 if (*conv) return;
 
-               //The iteration failed to converge. Turn off testing and restore h,s,pv and T
-               test = 0;
-               for( i = 0; i < n; i++ )
-                  {
-                  hr[ i ] = shr[ i ];
-                  hi[ i ] = shi[ i ];
-                  }
-               sr = svsr;
-               si = svsi;
-               polyev( nn, sr, si, pr, pi, qpr, qpi, &pvr, &pvi );
-               calct( &bol );
-               continue;
+                 //The iteration failed to converge. Turn off testing and restore h,s,pv and T
+                 test = 0;
+                 for (i = 0; i < n; i++)
+                   {
+                     hr[i] = shr[i];
+                     hi[i] = shi[i];
+                   }
+                 sr = svsr;
+                 si = svsi;
+                 polyev (nn, sr, si, pr, pi, qpr, qpi, &pvr, &pvi);
+                 calct (&bol);
+                 continue;
                }
-            pasd = 1;
-            }
+             pasd = 1;
+           }
          else
-            pasd = 0;
-      }
+           pasd = 0;
+    }
 
-   // Attempt an iteration with final H polynomial from second stage
-   vrshft( 10, zr, zi, conv );
-   }
+  // Attempt an iteration with final H polynomial from second stage
+  vrshft (10, zr, zi, conv);
+}
 
 // CARRIES OUT THE THIRD STAGE ITERATION.
 // L3 - LIMIT OF STEPS IN STAGE 3.
@@ -262,8 +268,8 @@ static void JT::fxshft( const int l2, double *zr, double *zi, int *conv )
 //           ITERATION CONVERGES IT CONTAINS THE FINAL ITERATE ON EXIT.
 // CONV    -  .TRUE. IF ITERATION CONVERGES
 //
-static void JT::vrshft( const int l3, double *zr, double *zi, int *conv )
-   {
+void jenkins_traub::vrshft (int l3, double *zr, double *zi, int *conv)
+{
    int b, bol;
    int i, j;
    double mp, ms, omp, relstp, r1, r2, tp;
@@ -329,12 +335,12 @@ _20:  calct( &bol );
          si += ti;
          }
       }
-   }
+}
 
 // COMPUTES  T = -P(S)/H(S).
 // BOOL   - LOGICAL, SET TRUE IF H(S) IS ESSENTIALLY ZERO.
-static void JT::calct( int *bol )
-   {
+void jenkins_traub::calct (int *bol)
+{
    int n;
    double hvr, hvi;
 
@@ -351,13 +357,13 @@ static void JT::calct( int *bol )
 
    tr = 0;
    ti = 0;
-   }
+}
 
 // CALCULATES THE NEXT SHIFTED H POLYNOMIAL.
 // BOOL   -  LOGICAL, IF .TRUE. H(S) IS ESSENTIALLY ZERO
 //
-static void JT::nexth( const int bol )
-   {
+void jenkins_traub::nexth( const int bol )
+{
    int j, n;
    double t1, t2;
 
@@ -384,13 +390,14 @@ static void JT::nexth( const int bol )
       }
    hr[ 0 ] = 0;
    hi[ 0 ] = 0;
-   }
+}
 
 // EVALUATES A POLYNOMIAL  P  AT  S  BY THE HORNER RECURRENCE
 // PLACING THE PARTIAL SUMS IN Q AND THE COMPUTED VALUE IN PV.
 //  
-static void JT::polyev( const int nn, const double sr, const double si, const double pr[], const double pi[], double qr[], double qi[], double *pvr, double *pvi )  
-   {
+void jenkins_traub::polyev (int nn, double sr, double si, const double *pr, const double *pi,
+                            double *qr, double *qi, double *pvr, double *pvi)
+{
    int i;
    double t;
 
@@ -407,7 +414,7 @@ static void JT::polyev( const int nn, const double sr, const double si, const do
       qr[ i ] = *pvr;
       qi[ i ] = *pvi;
       }
-   }
+}
 
 // BOUNDS THE ERROR IN EVALUATING THE POLYNOMIAL BY THE HORNER RECURRENCE.
 // QR,QI - THE PARTIAL SUMS
@@ -415,8 +422,9 @@ static void JT::polyev( const int nn, const double sr, const double si, const do
 // MP    -MODULUS OF POLYNOMIAL VALUE
 // ARE, MRE -ERROR BOUNDS ON COMPLEX ADDITION AND MULTIPLICATION
 //
-static double JT::errev( const int nn, const double qr[], const double qi[], const double ms, const double mp, const double are, const double mre )
-   {
+double jenkins_traub::errev (int nn, const double *qr, const double *qi, double ms, double mp,
+                             double are, double mre)
+{
    int i;
    double e;
 
@@ -425,13 +433,13 @@ static double JT::errev( const int nn, const double qr[], const double qi[], con
       e = e * ms + cmod( qr[ i ], qi[ i ] );
 
    return e * ( are + mre ) - mp * mre;
-   }
+}
 
 // CAUCHY COMPUTES A LOWER BOUND ON THE MODULI OF THE ZEROS OF A
 // POLYNOMIAL - PT IS THE MODULUS OF THE COEFFICIENTS.
 //
-static void JT::cauchy( const int nn, double pt[], double q[], double *fn_val )
-   {
+void jenkins_traub::cauchy (int nn, double *pt, double *q, double *fn_val)
+{
    int i, n;
    double x, xm, f, dx, df;
 
@@ -475,7 +483,7 @@ static void JT::cauchy( const int nn, double pt[], double q[], double *fn_val )
       }
 
    *fn_val = x;
-   }
+}
 
 // RETURNS A SCALE FACTOR TO MULTIPLY THE COEFFICIENTS OF THE POLYNOMIAL.
 // THE SCALING IS DONE TO AVOID OVERFLOW AND TO AVOID UNDETECTED UNDERFLOW
@@ -484,8 +492,8 @@ static void JT::cauchy( const int nn, double pt[], double q[], double *fn_val )
 // PT - MODULUS OF COEFFICIENTS OF P
 // ETA, INFIN, SMALNO, BASE - CONSTANTS DESCRIBING THE FLOATING POINT ARITHMETIC.
 //
-static double JT::scale( const int nn, const double pt[], const double eta, const double infin, const double smalno, const double base )
-   {
+double jenkins_traub::scale (int nn, const double *pt, double eta, double infin, double smalno, double base)
+{
    int i, l;
    double hi, lo, max, min, x, sc;
    double fn_val;
@@ -517,12 +525,12 @@ static double JT::scale( const int nn, const double pt[], const double eta, cons
    l = (int)( log( sc ) / log(base ) + 0.5 );
    fn_val = pow( base , l );
    return fn_val;
-   }
+}
 
 // COMPLEX DIVISION C = A/B, AVOIDING OVERFLOW.
 
-static void JT::cdivid( const double ar, const double ai, const double br, const double bi, double *cr, double *ci )
-   {
+void jenkins_traub::cdivid (double ar, double ai, double br, double bi, double *cr, double *ci)
+{
    double r, d, t, infin;
 
    if( br == 0 && bi == 0 )
@@ -547,12 +555,12 @@ static void JT::cdivid( const double ar, const double ai, const double br, const
    d = br + r * bi;
    *cr = ( ar + ai * r ) / d;
    *ci = ( ai - ar * r ) / d;
-   }
+}
 
 // MODULUS OF A COMPLEX NUMBER AVOIDING OVERFLOW.
 //
-double JT::cmod( const double r, const double i )
-   {
+double jenkins_traub::cmod (double r, double i)
+{
    double ar, ai;
 
    ar = fabs( r );
@@ -564,7 +572,7 @@ double JT::cmod( const double r, const double i )
       return ar * sqrt( 1.0 + pow( ( ai / ar ), 2.0 ) );
 
    return ar * sqrt( 2.0 );
-   }
+}
 
 // MCON PROVIDES MACHINE CONSTANTS USED IN VARIOUS PARTS OF THE PROGRAM.
 // THE USER MAY EITHER SET THEM DIRECTLY OR USE THE STATEMENTS BELOW TO
@@ -576,12 +584,12 @@ double JT::cmod( const double r, const double i )
 // SMALNO    THE SMALLEST POSITIVE FLOATING-POINT NUMBER
 // BASE      THE BASE OF THE FLOATING-POINT NUMBER SYSTEM USED
 //
-static void JT::mcon( double *eta, double *infiny, double *smalno, double *base )
-   {
-   *base = DBL_RADIX;
-   *eta = DBL_EPSILON;
-   *infiny = DBL_MAX;
-   *smalno = DBL_MIN;
-   }
+void jenkins_traub::mcon (double *eta, double *infiny, double *smalno, double *base)
+{
+  *base = DBL_RADIX;
+  *eta = DBL_EPSILON;
+  *infiny = DBL_MAX;
+  *smalno = DBL_MIN;
+}
 
 

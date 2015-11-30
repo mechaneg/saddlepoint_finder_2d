@@ -1,6 +1,8 @@
 #ifndef ROOTF_H
 #define ROOTF_H
 
+/// \file jenkins_traub.h
+
 /*
  *     INPUT:
  *     opr - double precision vector of real coefficients in order of
@@ -24,34 +26,61 @@
 #define MAXDEGREE 100
 #define MDP1 MAXDEGREE+1
 
-
-namespace JT
+class jenkins_traub
 {
+private:
+  int degree = 0;
 
-	int cpoly( const double *opr, const double *opi, int degree, double *zeror, double *zeroi );
-	
-	static double sr, si, tr, ti, pvr, pvi, are, mre, eta, infin;
-	static int nn;
-	static double *pr, *pi, *hr, *hi, *qpr, *qpi, *qhr, *qhi, *shr, *shi; 
+  double sr = 0.;
+  double si = 0.;
+  double tr = 0.;
+  double ti = 0.;
+  double pvr = 0.;
+  double pvi = 0.;
+  double are = 0.;
+  double mre = 0.;
+  double eta = 0.;
+  double infin = 0.;
 
+  int nn = 0;
+  double *pr  = nullptr;
+  double *pi  = nullptr;
+  double *hr  = nullptr;
+  double *hi  = nullptr;
+  double *qpr = nullptr;
+  double *qpi = nullptr;
+  double *qhr = nullptr;
+  double *qhi = nullptr;
+  double *shr = nullptr;
+  double *shi = nullptr;
 
-	static void noshft( const int l1 );
-	static void fxshft( const int l2, double *zr, double *zi, int *conv );
-	static void vrshft( const int l3, double *zr, double *zi, int *conv );
-	static void calct( int *bol );
-	static void nexth( const int bol );
-	static void polyev( const int nn, const double sr, const double si, const double pr[], \
-		const double pi[], double qr[], double qi[], double *pvr, double *pvi );
+private:
+  void noshft (int l1);
+  void fxshft (int l2, double *zr, double *zi, int *conv);
+  void vrshft (int l3, double *zr, double *zi, int *conv);
+  void calct  (int *bol);
+  void nexth  (int bol);
 
-	static double errev( const int nn, const double qr[], const double qi[], const double ms, \
-		const double mp, const double are, const double mre );
+  void polyev (int nn, double sr, double si, const double *pr,
+               const double *pi, double *qr, double *qi, double *pvr, double *pvi);
 
-	static void cauchy( const int nn, double pt[], double q[], double *fn_val );
-	static double scale( const int nn, const double pt[], const double eta, const double infin, const double smalno, const double base );
-	static void cdivid( const double ar, const double ai, const double br, const double bi, double *cr, double *ci );
-	static double cmod( const double r, const double i );
-	static void mcon( double *eta, double *infiny, double *smalno, double *base );
+  double errev (int nn, const double *qr, const double *qi, double ms,
+                double mp, double are, double mre);
 
+  void cauchy  (int nn, double *pt, double *q, double *fn_val);
+  void cdivid  (double ar, double ai, double br, double bi, double *cr, double *ci);
+  double scale (int nn, const double *pt, double eta, double infin, double smalno, double base);
+  double cmod  (double r, double i);
+  void mcon (double *eta, double *infiny, double *smalno, double *base);
+
+public:
+
+  jenkins_traub (int _degree);
+  ~jenkins_traub ();
+
+  int cpoly (const double *opr, const double *opi, double *zeror, double *zeroi);
 };
+
+
 
 #endif /* ROOTF_H */

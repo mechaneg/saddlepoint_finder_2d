@@ -61,11 +61,66 @@ void disp::calc_om (std::valarray<complex<double>> &om, const complex &k, const 
     }
 }
 
+void disp::CalcK(int& k_num, std::valarray<complx>& k, complx om, const Param& param)
+{
+	static complx* k_coeff = new complx[K_POLY_DEG + 1];		// max sizes
+	static double* k_coeff_re = new double[K_POLY_DEG + 1];		// even if number of roots
+	static double* k_coeff_im = new double[K_POLY_DEG + 1];		// less than K_POLY_DEG
+	static double* k_zero_re  = new double[K_POLY_DEG];
+	static double* k_zero_im  = new double[K_POLY_DEG];
+
+	int i, roots_num;
+
+	assert(k.size() == K_POLY_DEG);
+
+//////////////
+
+	if(abs(abs(param.M - param.U) - 1.) > std::numeric_limits<double>::epsilon())
+		k_num = 10;
+	else if (abs(om) > std::numeric_limits<double>::epsilon())
+		k_num = 9;
+	else
+		k_num = 4;
+
+//////////////
+
+	k_coeff[0] = k0coeff(om, param);
+	k_coeff[1] = k1coeff(om, param);
+	k_coeff[2] = k2coeff(om, param);
+	k_coeff[3] = k3coeff(om, param);
+	k_coeff[4] = k4coeff(om, param);
+	k_coeff[5] = k5coeff(om, param);
+	k_coeff[6] = k6coeff(om, param);
+	k_coeff[7] = k7coeff(om, param);
+	k_coeff[8] = k8coeff(om, param);
+	k_coeff[9] = k9coeff(om, param);
+	k_coeff[10] = k10coeff(om, param);
+
+
+	for(i = 0; i <= k_num; i++)
+	{
+		k_coeff_re[i] = k_coeff[k_num - i].real();			//inverse order in rootfinder
+		k_coeff_im[i] = k_coeff[k_num - i].imag();
+	}
+
+	roots_num = jenkins_traub::cpoly(k_coeff_re, k_coeff_im, k_num, k_zero_re, k_zero_im);
+
+//////////////
+
+	assert(roots_num == k_num);
+
+	for(i = 0; i < k_num; i++)
+	{
+		k[i].real(k_zero_re[i]);
+		k[i].imag(k_zero_im[i]);
+	}
+}
 
 ////////////////////////////////////
 ////// COEFFICIENT FUNCTIONS  //////
 ////////////////////////////////////
 
+/// omega coefficients
 complex disp::om6 (const complex &k, const params &param)
 {
   FIX_UNUSED (param);
@@ -104,18 +159,20 @@ complex disp::om1 (const complex &k, const params &param)
 
 complex disp::om0 (const complex &k, const params &param)
 {
-  return -pow (k, 4) * (pow (param.D, 2) * pow (k, 6) * (pow (param.M, 2) - 1.) + pow (param.M, 4) * pow(param.mu, 2) +
+  return -pow (k, 4) * (pow (param.D, 2) * pow (k, 6) * (pow (param.M, 2) - 1.) + pow (param.M, 4) * pow (param.mu, 2) +
          2. * param.D * pow (k, 4) * (pow (param.M, 2) - 1.) * pow (param.Mw, 2) +
                         pow (k, 2) * (pow (param.M, 2) - 1.) * pow (param.Mw, 4));
 }
 
+/// k coefficients
 complex disp::k10 (const complex &om, const params &param)
 {
-  //return -pow(param.D, 2) * (pow(param.M, 2) - 1.);
+  FIX_UNUSED (om);
+  return -pow (param.D, 2) * (pow (param.M, 2) - 1.);
+
   /*if(abs(param.M - param.U) <= std::numeric_limits<double>::epsilon())
   return 0.;*/
-
-  return -pow(param.D, 2) * (pow(param.M - param.U, 2) - 1.);
+//return -pow(param.D, 2) * (pow(param.M - param.U, 2) - 1.);
 }
 
 complex disp::k9 (const complex &om, const params &param)
@@ -130,108 +187,107 @@ complex disp::k9 (const complex &om, const params &param)
 
 complex disp::k8 (const complex &om, const params &param)
 {
-	//return -param.D * (2. * (pow(param.M, 2) - 1.) * pow(param.Mw, 2) + param.D * pow(om, 2));
+  return -param.D * (2. * (pow (param.M, 2) - 1.) * pow (param.Mw, 2) + param.D * pow (om, 2));
 
-	return param.D * (2. * (pow(param.M - param.U, 2) - 1.) * (pow(param.U, 2) - pow(param.Mw, 2)) \
-		- param.D * pow(om, 2));
+//  return param.D * (2. * (pow(param.M - param.U, 2) - 1.) * (pow(param.U, 2) - pow(param.Mw, 2)) \
+//                - param.D * pow(om, 2));
 }
 
 complex disp::k7 (const complex &om, const params &param)
 {
-  //return 4. * param.D * param.M * pow(param.Mw, 2) * om;
+  return 4. * param.D * param.M * pow (param.Mw, 2) * om;
 
-  return 4. * param.D * (-param.U + (param.M - param.U) * (pow(param.Mw, 2) + \
-    (param.M - 2. * param.U) * param.U) ) * om;
+//  return 4. * param.D * (-param.U + (param.M - param.U) * (pow(param.Mw, 2) + \
+//    (param.M - 2. * param.U) * param.U) ) * om;
 }
 
 complex disp::k6 (const complex &om, const params &param)
 {
-/*return -(pow(param.M, 2) - 1.) * pow(param.Mw, 4) + \
-        2. * param.D * (pow(param.M, 2) - 1. - pow(param.Mw, 2)) * pow(om, 2);*/
+  return -(pow (param.M, 2) - 1.) * pow (param.Mw, 4) +
+    2. * param.D * (pow (param.M, 2) - 1. - pow (param.Mw, 2)) * pow (om, 2);
 
-  return -(-1. + pow(param.M - param.U, 2)) * pow(param.Mw - param.U, 2) * \
-    pow(param.Mw + param.U, 2) + 2. * param.D * (-1. + pow(param.M, 2) - pow(param.Mw, 2) - \
-    6. * param.M * param.U + 6. * pow(param.U, 2)) * pow(om, 2);
+//  return -(-1. + pow(param.M - param.U, 2)) * pow(param.Mw - param.U, 2) * \
+//    pow(param.Mw + param.U, 2) + 2. * param.D * (-1. + pow(param.M, 2) - pow(param.Mw, 2) - \
+//    6. * param.M * param.U + 6. * pow(param.U, 2)) * pow(om, 2);
 }
 
 complex disp::k5 (const complex &om, const params &param)
 {
-  //return 2. * param.M * om * (pow(param.Mw, 4) - 2. * param.D * pow(om, 2));
+  return 2. * param.M * om * (pow(param.Mw, 4) - 2. * param.D * pow(om, 2));
 
-  return 2. * (param.Mw - param.U) * (param.Mw + param.U) * (-2. * param.U + \
-    (param.M - param.U) * (pow(param.Mw, 2) + (2. * param.M - 3. * param.U) * param.U)) * \
-    om - 4. * param.D * (param.M - 2. * param.U) * pow(om, 3);
+//  return 2. * (param.Mw - param.U) * (param.Mw + param.U) * (-2. * param.U + \
+//    (param.M - param.U) * (pow(param.Mw, 2) + (2. * param.M - 3. * param.U) * param.U)) * \
+//    om - 4. * param.D * (param.M - 2. * param.U) * pow(om, 3);
 }
 
 complex disp::k4 (const complex &om, const params &param)
 {
-  /*return -pow(param.M, 4) * pow(param.mu, 2) - pow(param.Mw, 2) * \
-                (2. - 2. * pow(param.M, 2) + pow(param.Mw, 2)) * pow(om, 2) + 2. * param.D * pow(om, 4);*/
+  return -pow (param.M, 4) * pow (param.mu, 2) - pow (param.Mw, 2) *
+         (2. - 2. * pow (param.M, 2) + pow (param.Mw, 2)) * pow (om, 2) + 2. * param.D * pow (om, 4);
 
-  return -pow(param.mu, 2) * pow(param.M - param.U, 4) + pow(om, 2) * \
-    (-pow(param.Mw, 4) + pow(param.U, 2) * (6. - 6. * pow(param.M, 2) + \
-    20. * param.M * param.U - 15. * pow(param.U, 2)) + 2. * pow(param.Mw, 2) * \
-    (-1. + pow(param.M, 2) - 6. * param.M * param.U + 6. * pow(param.U, 2)) + \
-    2. * param.D * pow(om, 2));
+//  return -pow(param.mu, 2) * pow(param.M - param.U, 4) + pow(om, 2) * \
+//    (-pow(param.Mw, 4) + pow(param.U, 2) * (6. - 6. * pow(param.M, 2) + \
+//    20. * param.M * param.U - 15. * pow(param.U, 2)) + 2. * pow(param.Mw, 2) * \
+//    (-1. + pow(param.M, 2) - 6. * param.M * param.U + 6. * pow(param.U, 2)) + \
+//    2. * param.D * pow(om, 2));
 }
 
 complex disp::k3 (const complex &om, const params &param)
 {
-  /*return 4. * param.M * om * (param.M * param.mu - param.Mw * om) * \
-  (param.M * param.mu + param.Mw * om);*/
+  return 4. * param.M * om * (param.M * param.mu - param.Mw * om) *
+    (param.M * param.mu + param.Mw * om);
 
-  return 4. * om * (pow(param.mu, 2) * pow(param.M - param.U, 3) + \
-    (-param.M * pow(param.Mw, 2) + param.U - pow(param.M, 2) * param.U + 2. * \
-    pow(param.Mw, 2) * param.U + 5. * param.M * pow(param.U, 2) - 5. * pow(param.U, 3)) * \
-    pow(om, 2));
-
+//  return 4. * om * (pow(param.mu, 2) * pow(param.M - param.U, 3) + \
+//    (-param.M * pow(param.Mw, 2) + param.U - pow(param.M, 2) * param.U + 2. * \
+//    pow(param.Mw, 2) * param.U + 5. * param.M * pow(param.U, 2) - 5. * pow(param.U, 3)) * \
+//    pow(om, 2));
 }
 
 complex disp::k2 (const complex &om, const params &param)
 {
-  /*return (1. + 2. * pow(param.Mw, 2)) * pow(om, 4) - pow(param.M, 2) * \
-  (6. * pow(param.mu, 2) * pow(om, 2) + pow(om, 4));*/
+  return (1. + 2. * pow (param.Mw, 2)) * pow (om, 4) - pow (param.M, 2) *
+    (6. * pow (param.mu, 2) * pow (om, 2) + pow (om, 4));
 
-  return pow(om, 2) * (-6. * pow(param.mu, 2) * pow(param.M - param.U, 2) + \
-    (1. - pow(param.M, 2) + 2. * pow(param.Mw, 2) + 10. * param.M * param.U - \
-    15. * pow(param.U, 2)) * pow(om, 2));
+//  return pow(om, 2) * (-6. * pow(param.mu, 2) * pow(param.M - param.U, 2) + \
+//    (1. - pow(param.M, 2) + 2. * pow(param.Mw, 2) + 10. * param.M * param.U - \
+//    15. * pow(param.U, 2)) * pow(om, 2));
 }
 
 complex disp::k1 (const complex &om, const params &param)
 {
-  //return 2. * param.M * pow(om, 3) * (2. * pow(param.mu, 2) + pow(om, 2));
+  return 2. * param.M * pow (om, 3) * (2. * pow (param.mu, 2) + pow (om, 2));
 
-  return 4. * pow(param.mu, 2) * (param.M - param.U) * pow(om, 3) + 2. * \
-    (param.M - 3. * param.U) * pow(om, 5);
+//  return 4. * pow(param.mu, 2) * (param.M - param.U) * pow(om, 3) + 2. * \
+//    (param.M - 3. * param.U) * pow(om, 5);
 }
 
 complex disp::k0 (const complex &om, const params &param)
 {
-  return -pow(om, 4) * (pow(param.mu, 2) + pow(om, 2));
+  return -pow (om, 4) * (pow (param.mu, 2) + pow (om, 2));
 }
 
 ////////////////////////////////////
 ////// DISP_RELATION FUNCTIONS  ////
 ////////////////////////////////////
 
-complex disp::F (complex om, complex k, const params &param)
+complex disp::F (const complex &om, const complex &k, const params &param)
 {
   return (pow (om, 2) - pow (param.Mw * k, 2) - param.D * pow (k, 4)) * \
                 sqrt (pow (k, 2) - pow (om - param.M * k, 2)) + param.mu * pow (om - param.M * k, 2);
 }
 
-complex disp::F (complex om, complex k, double U, const params &param)
+complex disp::F (const complex &om, const complex &k, double U, const params &param)
 {
   return F (om + U * k, k, param);
 }
 
-complex disp::F2 (complex om, complex k, const params &param)
+complex disp::F2 (const complex &om, const complex &k, const params &param)
 {
   return pow (pow (om, 2) - pow (param.Mw * k, 2) - param.D * pow (k, 4), 2) *
         (pow (k, 2) - pow (om - param.M * k, 2)) - pow (param.mu, 2) * pow (om - param.M * k, 4);
 }
 
-complex disp::F2 (complex om, complex k, double U, const params &param)
+complex disp::F2 (const complex &om, const complex &k, double U, const params &param)
 {
   return F2 (om + U * k, k, param);
 }
