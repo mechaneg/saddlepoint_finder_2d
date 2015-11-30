@@ -34,6 +34,8 @@ Thumbs.db
 /.qmake.cache
 /.qmake.stash
 
+*saddlepoint_finder_2d
+
 # qtcreator generated files
 *.pro.user*
 
