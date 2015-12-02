@@ -63,7 +63,7 @@ public:
   static complex F2 (const complex &om, const complex &k, double U, const params &param);
 
   int calc_k  (std::vector<complex> &k, const complex &om, const params &param, jenkins_traub &jt_k);
-  int calc_om (std::vector<complex> &om, const complex &k, const params &param, jenkins_traub &jt);
+  int calc_om (std::vector<complex> &om, const complex &k, const params &param, jenkins_traub &jt_om);
 };
 
 #endif /* DISP_REL_H */

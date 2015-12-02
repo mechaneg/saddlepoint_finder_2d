@@ -13,10 +13,11 @@ model::~model () {}
 
 int model::init_params_by_file (report_system *rep)
 {
-  FILE *model_file = fopen (io_files.abs_model_name.toStdString ().c_str (), "r");
+  std::string filename = io_files.abs_model_name.toStdString ();
+  FILE *model_file = fopen (filename.c_str (), "r");
   if (!model_file)
     {
-      rep->print ("Error: cannot open model '%s'.\n", io_files.abs_model_name.toStdString ().c_str ());
+      rep->print ("Error: cannot open model '%s'.\n", filename.c_str ());
       return -1;
     }
 

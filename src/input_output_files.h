@@ -18,10 +18,16 @@ public:
   QString model_path;
   QString results_path;
 
-  QString results_folder;
-  QString res_suffix;
-  QString model_suffix;
+  static const QString results_folder;
+  static const QString res_suffix;
+  static const QString model_suffix;
 
+private:
+  int abs_model_name_init (report_system *rep, const cmd_params &cmd);
+  int model_name_and_path_init (report_system *rep);
+  void results_path_init ();
+
+public:
   int construct_names (report_system *rep, const cmd_params &cmd);
 };
 
