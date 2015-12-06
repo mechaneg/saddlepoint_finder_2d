@@ -12,7 +12,7 @@ SOURCES += \
     src/params.cpp \
     src/jenkins_traub.cpp \
     src/disp_rel.cpp \
-    file_system.cpp
+    src/file_system.cpp
 
 HEADERS += \
     src/common_defines.h \
@@ -25,4 +25,4 @@ HEADERS += \
     src/om_k.h \
     src/jenkins_traub.h \
     src/disp_rel.h \
-    file_system.h
+    src/file_system.h
