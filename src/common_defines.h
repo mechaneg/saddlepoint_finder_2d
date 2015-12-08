@@ -24,5 +24,8 @@
 
 #define MIN_FOR_COMPARE 1.e-12
 
+#define OM_POLY_DEG 6
+#define  K_POLY_DEG 10
+
 #endif // COMMON_DEFINES_H
 
