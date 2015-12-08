@@ -11,7 +11,7 @@ SOURCES += \
     src/input_output_files.cpp \
     src/params.cpp \
     src/jenkins_traub.cpp \
-    src/disp_rel.cpp \
+    src/disp_relation.cpp \
     src/file_system.cpp
 
 HEADERS += \
@@ -24,5 +24,5 @@ HEADERS += \
     src/input_output_files.h \
     src/om_k.h \
     src/jenkins_traub.h \
-    src/disp_rel.h \
+    src/disp_relation.h \
     src/file_system.h

@@ -1,7 +1,7 @@
-#ifndef DISP_REL_H
-#define DISP_REL_H
+#ifndef DISP_RELATION_H
+#define DISP_RELATION_H
 
-/// \file disp_rel.h
+/// \file disp_relation.h
 
 #include <vector>
 #include <complex>
@@ -10,7 +10,7 @@ typedef std::complex<double> complex;
 class params;
 class jenkins_traub;
 
-class disp_rel
+class disp_relation
 {
 private:
   int om_poly_deg = 0;
@@ -29,13 +29,13 @@ private:
   double *k_zero_im  = nullptr;
 
 public:
-  ~disp_rel ();
+  ~disp_relation ();
 
   int init (int _om_poly_deg, int _k_poly_deg);
   int check ();
 
-  disp_rel (const disp_rel &origin) = default;
-  disp_rel& operator= (const disp_rel &origin) = default;
+  disp_relation (const disp_relation &origin) = default;
+  disp_relation& operator= (const disp_relation &origin) = default;
 
   static complex om6 (const complex &k, const params &param);
   static complex om5 (const complex &k, const params &param);
@@ -66,4 +66,4 @@ public:
   int calc_om (std::vector<complex> &om, const complex &k, const params &param, jenkins_traub &jt_om);
 };
 
-#endif /* DISP_REL_H */
+#endif /* DISP_RELATION_H */
