@@ -28,8 +28,14 @@ int model_controller::process_model ()
       rep->print ("Error: cannot initialize model.\n");
       return -1;
     }
-  else
-    rep->print ("Info: model was successfully initialized.\n");
+  rep->print ("Info: model was successfully initialized.\n");
+
+  if (m_model.calc_branch_on_real_axe (rep) < 0)
+    {
+      rep->print ("Error: cannot calculate branch on real axe.\n");
+      return -1;
+    }
+  rep->print ("Info: branch on real axe was successfully calculated.\n");
 
   return 0;
 }

@@ -29,6 +29,7 @@ private:
   double *k_zero_im  = nullptr;
 
 public:
+  disp_relation () = default;
   ~disp_relation ();
 
   int init (int _om_poly_deg, int _k_poly_deg);
