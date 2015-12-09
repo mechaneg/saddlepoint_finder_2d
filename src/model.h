@@ -5,7 +5,6 @@
 
 #include "input_output_files.h"
 #include "params.h"
-#include "om_k.h"
 
 #include <complex>
 
@@ -23,7 +22,7 @@ private:
   complex instab_left_bound  = 0.;
   complex instab_right_bound = 0.;
 
-  std::vector<om_k> om_real_axe;
+  std::vector<complex> branch_on_real_axe;
 
 private:
   int init_params_by_file (report_system *rep);
