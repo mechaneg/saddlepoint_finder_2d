@@ -20,10 +20,11 @@ private:
   input_output_files io_files;
   params param;
 
-//  complex instab_left_bound  = 0.;
-//  complex instab_right_bound = 0.;
-
+  /// real axe info
   std::vector<om_k> branch_real_axe;
+  double re_om_min_real_axe = 0.;
+  double re_om_max_real_axe = 0.;
+  std::vector<int> im_om_max_real_axe;    // indices of local maximums
 
 private:
   int init_params_by_file (report_system *rep);

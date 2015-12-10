@@ -104,6 +104,23 @@ int model::calc_branch_on_real_axe (report_system *rep)
         }
     }
 
+  /// compute min and max
+  re_om_min_real_axe = 0.;
+  re_om_max_real_axe = 0.;
+  for (const auto &pair : branch_real_axe)
+    {
+      if (pair.om.real () < re_om_min_real_axe)
+        re_om_min_real_axe = pair.om.real ();
+      if (pair.om.real () > re_om_max_real_axe)
+        re_om_max_real_axe = pair.om.real ();
+    }
+
+  const unsigned int min_num_for_extremum_search = 3;
+  if (branch_real_axe.size () < min_num_for_extremum_search)
+    return 0;
+
+  for (unsigned int i = 0; i < branch_real_axe.size ();)
+
   return 0;
 }
 
