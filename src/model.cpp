@@ -42,6 +42,8 @@ int model::init_model (report_system *rep, const cmd_params &cmd)
   if (io_files.construct_names (rep, cmd) < 0)
     return -1;
 
+  if (io_files.create_result_dir (rep) < 0)
+    return -1;
   if (init_params_by_file (rep) < 0)
     {
       rep->print ("Error: cannot initialize model by file.\n");

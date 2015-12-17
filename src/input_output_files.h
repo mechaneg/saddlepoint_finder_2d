@@ -29,6 +29,7 @@ private:
 
 public:
   int construct_names (report_system *rep, const cmd_params &cmd);
+  int create_result_dir (report_system *rep);
 };
 
 #endif // INPUT_OUTPUT_FILES_H

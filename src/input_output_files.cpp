@@ -5,7 +5,6 @@
 #include "file_system.h"
 
 #include <QDir>
-//#include <QDebug>
 
 const QString input_output_files::results_folder = "RESULTS";
 const QString input_output_files::res_suffix     = ".res";
@@ -55,7 +54,7 @@ int input_output_files::model_name_and_path_init (report_system *rep)
 void input_output_files::results_path_init ()
 {
   results_path = model_path + results_folder;
-  results_path.append ("/");
+  //results_path.append ("/");
 }
 
 int input_output_files::construct_names (report_system *rep, const cmd_params &cmd)
@@ -68,5 +67,19 @@ int input_output_files::construct_names (report_system *rep, const cmd_params &c
 
   results_path_init ();
 
+  return 0;
+}
+
+int input_output_files::create_result_dir (report_system *rep)
+{
+  QDir results_dir (results_path);
+  if (!results_dir.exists ())
+    {
+      if (!results_dir.mkpath ("."))
+        {
+          rep->print ("Error: cannot create result dir for the model.\n");
+          return -1;
+        }
+    }
   return 0;
 }
