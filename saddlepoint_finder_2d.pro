@@ -12,7 +12,8 @@ SOURCES += \
     src/params.cpp \
     src/jenkins_traub.cpp \
     src/disp_relation.cpp \
-    src/file_system.cpp
+    src/file_system.cpp \
+    src/branch_on_real_axe.cpp
 
 HEADERS += \
     src/common_defines.h \
@@ -25,4 +26,5 @@ HEADERS += \
     src/om_k.h \
     src/jenkins_traub.h \
     src/disp_relation.h \
-    src/file_system.h
+    src/file_system.h \
+    src/branch_on_real_axe.h

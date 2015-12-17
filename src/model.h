@@ -6,6 +6,7 @@
 #include "input_output_files.h"
 #include "params.h"
 #include "om_k.h"
+#include "branch_on_real_axe.h"
 
 #include <complex>
 
@@ -21,11 +22,7 @@ private:
   params param;
 
   /// real axe info
-  std::vector<om_k> branch_real_axe;
-  double re_om_min_real_axe = 0.;
-  double re_om_max_real_axe = 0.;
-  std::vector<unsigned int> im_om_max_real_axe;    // indices of local maximums
-  std::vector<unsigned int> im_om_min_real_axe;    // indices of local maximums
+  branch_on_real_axe real_axe;
 
 private:
   int init_params_by_file (report_system *rep);
