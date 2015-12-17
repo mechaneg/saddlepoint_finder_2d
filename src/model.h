@@ -36,6 +36,7 @@ public:
 
   int init_model (report_system *rep, const cmd_params &cmd);
   int calc_branch_on_real_axe (report_system *rep);
+  int dump_branch_on_real_axe (report_system *rep);
 };
 
 #endif // MODEL_H
