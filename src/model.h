@@ -24,7 +24,8 @@ private:
   std::vector<om_k> branch_real_axe;
   double re_om_min_real_axe = 0.;
   double re_om_max_real_axe = 0.;
-  std::vector<int> im_om_max_real_axe;    // indices of local maximums
+  std::vector<unsigned int> im_om_max_real_axe;    // indices of local maximums
+  std::vector<unsigned int> im_om_min_real_axe;    // indices of local maximums
 
 private:
   int init_params_by_file (report_system *rep);

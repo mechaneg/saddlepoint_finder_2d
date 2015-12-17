@@ -115,11 +115,33 @@ int model::calc_branch_on_real_axe (report_system *rep)
         re_om_max_real_axe = pair.om.real ();
     }
 
+  /// compute indices of extremums
   const unsigned int min_num_for_extremum_search = 3;
   if (branch_real_axe.size () < min_num_for_extremum_search)
-    return 0;
+    {
+      rep->print ("Error: too few points on real axe: only '%u'.\n",
+                  branch_real_axe.size ());
+      return -1;
+    }
 
-  for (unsigned int i = 0; i < branch_real_axe.size ();)
+  double prev = branch_real_axe[1].om.imag () - branch_real_axe[0].om.imag ();
+  double next = 0.;
+  for (unsigned int i = 2; i < branch_real_axe.size (); i++)
+    {
+      next = branch_real_axe[i].om.imag () - branch_real_axe[i - 1].om.imag ();
+      if (prev < 0. && next > 0.)
+        im_om_min_real_axe.push_back (i - 1);
+      if (prev > 0. && next < 0.)
+        im_om_max_real_axe.push_back (i - 1);
+
+      prev = next;
+    }
+
+  if (!im_om_max_real_axe.size ())
+    {
+      rep->print ("Error: no local maximums of Im (omega) on real axe.\n");
+      return -1;
+    }
 
   return 0;
 }
