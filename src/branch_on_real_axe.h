@@ -4,6 +4,7 @@
 /// \file branch_on_real_axe.h
 
 #include <vector>
+#include <QString>
 #include "om_k.h"
 
 class report_system;
@@ -23,6 +24,7 @@ public:
   int calc_extremum_positions (report_system *rep);
   void calc_real_om_minmax ();
 
+  int dump_points (const std::string &file_name);
 };
 
 #endif

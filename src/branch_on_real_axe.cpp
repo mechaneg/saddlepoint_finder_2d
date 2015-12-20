@@ -8,6 +8,9 @@
 #include "report_system.h"
 #include "params.h"
 
+#include <QFile>
+#include <cstdio>
+
 int branch_on_real_axe::calc_points (report_system *rep, const params &param)
 {
   /// prepare computational workaround
@@ -108,4 +111,12 @@ int branch_on_real_axe::calc_extremum_positions (report_system *rep)
 
   return 0;
 
+}
+
+int branch_on_real_axe::dump_points (const std::string &file_name)
+{
+  FILE *file = fopen (file_name.c_str (), "w");
+  FIX_UNUSED (file);
+
+  return 0;
 }
