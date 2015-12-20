@@ -52,6 +52,7 @@ int model::calc_branch_on_real_axe (report_system *rep)
 {
   if (real_axe.calc_points (rep, param) < 0)
     return -1;
+
   real_axe.calc_real_om_minmax ();
 
   if (real_axe.calc_extremum_positions (rep) < 0)
