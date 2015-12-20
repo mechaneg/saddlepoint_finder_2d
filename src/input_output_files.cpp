@@ -6,9 +6,10 @@
 
 #include <QDir>
 
-const QString input_output_files::results_folder = "RESULTS";
-const QString input_output_files::res_suffix     = ".res";
-const QString input_output_files::model_suffix   = ".data";
+const QString input_output_files::results_folder  = "RESULTS";
+const QString input_output_files::res_suffix      = ".res";
+const QString input_output_files::model_suffix    = ".data";
+const QString input_output_files::real_axe_suffix = "real_axe";
 
 int input_output_files::abs_model_name_init (report_system *rep, const cmd_params &cmd)
 {
@@ -54,7 +55,13 @@ int input_output_files::model_name_and_path_init (report_system *rep)
 void input_output_files::results_path_init ()
 {
   results_path = model_path + results_folder;
-  //results_path.append ("/");
+  results_path.append ("/");
+}
+
+void input_output_files::real_axe_name_init ()
+{
+  real_axe_name = results_path + model_name + "_" +
+      real_axe_suffix + res_suffix;
 }
 
 int input_output_files::construct_names (report_system *rep, const cmd_params &cmd)
@@ -66,6 +73,7 @@ int input_output_files::construct_names (report_system *rep, const cmd_params &c
     return -2;
 
   results_path_init ();
+  real_axe_name_init ();
 
   return 0;
 }
