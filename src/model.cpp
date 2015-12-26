@@ -58,7 +58,7 @@ int model::calc_branch_on_real_axe (report_system *rep)
   if (real_axe.calc_extremum_positions (rep) < 0)
     return -1;
 
-  if (real_axe.dump_points (io_files.real_axe_name.toStdString ()) < 0)
+  if (real_axe.dump_points (rep, io_files.real_axe_name.toStdString ()) < 0)
     {
       rep->print ("Error: cannot save real_axe info to result file.\n");
       return -1;
@@ -66,30 +66,3 @@ int model::calc_branch_on_real_axe (report_system *rep)
 
   return 0;
 }
-
-int model::dump_branch_on_real_axe (report_system *rep)
-{
-  FIX_UNUSED (rep);
-
-  return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

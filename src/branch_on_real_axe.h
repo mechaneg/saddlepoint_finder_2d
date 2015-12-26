@@ -24,7 +24,7 @@ public:
   int calc_extremum_positions (report_system *rep);
   void calc_real_om_minmax ();
 
-  int dump_points (const std::string &file_name);
+  int dump_points (report_system *rep, const std::string &file_name);
 };
 
 #endif
