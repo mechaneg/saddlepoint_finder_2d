@@ -17,7 +17,7 @@ private:
   double re_om_min = 0.;
   double re_om_max = 0.;
   std::vector<unsigned int> im_om_max_positions;    // indices of local maximums
-  std::vector<unsigned int> im_om_min_positions;    // indices of local maximums
+  std::vector<unsigned int> im_om_min_positions;    // indices of local minimums
 
 public:
   int calc_points (report_system *rep, const params &param);
