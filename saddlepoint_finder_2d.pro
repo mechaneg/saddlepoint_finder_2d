@@ -13,7 +13,8 @@ SOURCES += \
     src/jenkins_traub.cpp \
     src/disp_relation.cpp \
     src/file_system.cpp \
-    src/branch_on_real_axe.cpp
+    src/branch_on_real_axe.cpp \
+    src/equip_line.cpp \
 
 HEADERS += \
     src/common_defines.h \
@@ -27,4 +28,6 @@ HEADERS += \
     src/jenkins_traub.h \
     src/disp_relation.h \
     src/file_system.h \
-    src/branch_on_real_axe.h
+    src/branch_on_real_axe.h \
+    src/equip_line.h \
+    src/real_axe_intersection_state.h

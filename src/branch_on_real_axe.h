@@ -25,6 +25,13 @@ public:
   void calc_real_om_minmax ();
 
   int dump_points (report_system *rep, const std::string &file_name);
+
+  inline double get_re_om_min () { return re_om_min; }
+  inline double get_re_om_max () { return re_om_max; }
+
+  inline const std::vector<om_k>& get_points () { return points; }
+  inline const std::vector<unsigned int>& get_im_om_max_positions () { return im_om_max_positions; }
+  inline const std::vector<unsigned int>& get_im_om_min_positions () { return im_om_min_positions; }
 };
 
 #endif

@@ -66,3 +66,13 @@ int model::calc_branch_on_real_axe (report_system *rep)
 
   return 0;
 }
+
+int model::calc_equip_lines (report_system *rep)
+{
+  FIX_UNUSED (rep);
+
+  return 0;
+}
+
+
+
