@@ -3,10 +3,18 @@
 #ifndef EQUIP_LINE_H
 #define EQUIP_LINE_H
 
+#include "branch_on_real_axe.h"
+#include "disp_relation.h"
+#include "jenkins_traub.h"
 #include "om_k.h"
+#include "params.h"
 #include "real_axe_intersection_state.h"
 
 #include <vector>
+
+class report_system;
+typedef std::complex<double> complex;
+
 
 class equip_line
 {
@@ -24,7 +32,13 @@ public:
   inline const std::vector<om_k>& get_points () { return points; }
   inline real_axe_intersection get_state () { return state; }
 
-  int self_build ();
+  int self_build (
+    report_system *rep,
+    branch_on_real_axe &branch,
+    std::vector<complex> &k_branches_workplace,
+    const params &param,
+    disp_relation &disp,
+    jenkins_traub &jt_k);
 
 };
 
