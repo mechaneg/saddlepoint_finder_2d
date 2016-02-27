@@ -22,25 +22,25 @@ disp_relation::~disp_relation ()
   FREE_ARR (k_zero_im);
 }
 
-int disp_relation::init (int _om_poly_deg, int _k_poly_deg)
+int disp_relation::init (unsigned maximum_om_poly_deg, unsigned maximum_k_poly_deg)
 {
-  om_poly_deg = _om_poly_deg;
-  k_poly_deg  = _k_poly_deg;
+  max_om_poly_deg = maximum_om_poly_deg;
+  max_k_poly_deg  = maximum_k_poly_deg;
 
   if (check () < 0)
     return -1;
 
-  om_coeff    = new complex[om_poly_deg + 1];
-  om_coeff_re = new double[om_poly_deg + 1];
-  om_coeff_im = new double[om_poly_deg + 1];
-  om_zero_re  = new double[om_poly_deg];
-  om_zero_im  = new double[om_poly_deg];
+  om_coeff    = new complex[max_om_poly_deg + 1];
+  om_coeff_re = new double[max_om_poly_deg + 1];
+  om_coeff_im = new double[max_om_poly_deg + 1];
+  om_zero_re  = new double[max_om_poly_deg];
+  om_zero_im  = new double[max_om_poly_deg];
 
-  k_coeff    = new complex[k_poly_deg + 1];
-  k_coeff_re = new double[k_poly_deg + 1];
-  k_coeff_im = new double[k_poly_deg + 1];
-  k_zero_re  = new double[k_poly_deg];
-  k_zero_im  = new double[k_poly_deg];
+  k_coeff    = new complex[max_k_poly_deg + 1];
+  k_coeff_re = new double[max_k_poly_deg + 1];
+  k_coeff_im = new double[max_k_poly_deg + 1];
+  k_zero_re  = new double[max_k_poly_deg];
+  k_zero_im  = new double[max_k_poly_deg];
 
   return 0;
 }
@@ -48,17 +48,16 @@ int disp_relation::init (int _om_poly_deg, int _k_poly_deg)
 
 int disp_relation::check ()
 {
-  if (om_poly_deg <= 0)
+  if (max_om_poly_deg == 0)
     return -1;
-  if (k_poly_deg <= 0)
+  if (max_k_poly_deg == 0)
     return -2;
   return 0;
 }
 
 int disp_relation::calc_om (std::vector<complex> &om, const complex &k, const params &param, jenkins_traub &jt_om)
 {
-  if (om.size () != static_cast<unsigned int> (om_poly_deg))
-    return -1;
+  unsigned actual_deg = max_om_poly_deg;
 
   om_coeff[6] = om0 (k, param);   //inverse order in rootfinder
   om_coeff[5] = om1 (k, param);
@@ -68,16 +67,20 @@ int disp_relation::calc_om (std::vector<complex> &om, const complex &k, const pa
   om_coeff[1] = om5 (k, param);
   om_coeff[0] = om6 (k, param);
 
-  for (int i = 0; i < om_poly_deg + 1; i++)
+  for (unsigned i = 0; i < actual_deg + 1; i++)
     {
       om_coeff_re[i] = om_coeff[i].real();
       om_coeff_im[i] = om_coeff[i].imag();
     }
 
-  if (jt_om.cpoly (om_coeff_re, om_coeff_im, om_zero_re, om_zero_im) != om_poly_deg)
+  int roots_num = jt_om.cpoly (om_coeff_re, om_coeff_im, actual_deg, om_zero_re, om_zero_im);
+  if (roots_num <= 0)
     return -1;
 
-  for (int i = 0; i < om_poly_deg; i++)
+  if (om.size () != static_cast<size_t> (roots_num))
+    om.resize (static_cast<size_t> (roots_num));
+
+  for (int i = 0; i < roots_num; i++)
     {
      om[i].real (om_zero_re[i]);
      om[i].imag (om_zero_im[i]);
@@ -88,8 +91,7 @@ int disp_relation::calc_om (std::vector<complex> &om, const complex &k, const pa
 
 int disp_relation::calc_k (std::vector<complex> &k, const complex &om, const params &param, jenkins_traub &jt_k)
 {
-  if (k.size () != static_cast<unsigned int> (k_poly_deg))
-    return -1;
+  unsigned actual_deg = max_k_poly_deg;
 
 //int& k_num
 
@@ -112,16 +114,20 @@ int disp_relation::calc_k (std::vector<complex> &k, const complex &om, const par
   k_coeff[9] = k1 (om, param);
   k_coeff[10] = k0 (om, param);
 
-  for (int i = 0; i <= k_poly_deg; i++)
+  for (unsigned i = 0; i < actual_deg + 1; i++)
   {
-    k_coeff_re[i] = k_coeff[i].real ();			//inverse order in rootfinder
+    k_coeff_re[i] = k_coeff[i].real ();	     //inverse order in rootfinder
     k_coeff_im[i] = k_coeff[i].imag ();
   }
 
-  if (jt_k.cpoly (k_coeff_re, k_coeff_im, k_zero_re, k_zero_im) != k_poly_deg)
+  int roots_num = jt_k.cpoly (k_coeff_re, k_coeff_im, actual_deg, k_zero_re, k_zero_im);
+  if (roots_num <= 0)
     return -1;
 
-  for (int i = 0; i < k_poly_deg; i++)
+  if (k.size () != static_cast<size_t> (roots_num))
+    k.resize (static_cast<size_t> (roots_num));
+
+  for (int i = 0; i < roots_num; i++)
     {
       k[i].real (k_zero_re[i]);
       k[i].imag (k_zero_im[i]);

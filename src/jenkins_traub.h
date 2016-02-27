@@ -29,7 +29,7 @@
 class jenkins_traub
 {
 private:
-  int degree = 0;
+  unsigned max_deg = 0;
 
   double sr = 0.;
   double si = 0.;
@@ -77,9 +77,9 @@ public:
 
   ~jenkins_traub ();
 
-  int init (int _degree);
+  int init (unsigned max_degree);
   int check ();
-  int cpoly (const double *opr, const double *opi, double *zeror, double *zeroi);
+  int cpoly (const double *opr, const double *opi, unsigned actual_deg, double *zeror, double *zeroi);
 };
 
 #endif /* ROOTF_H */

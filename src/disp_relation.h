@@ -13,8 +13,8 @@ class jenkins_traub;
 class disp_relation
 {
 private:
-  int om_poly_deg = 0;
-  int  k_poly_deg = 0;
+  unsigned max_om_poly_deg = 0;
+  unsigned  max_k_poly_deg = 0;
 
   complex *om_coeff   = nullptr;
   double *om_coeff_re = nullptr;
@@ -32,7 +32,7 @@ public:
   disp_relation () = default;
   ~disp_relation ();
 
-  int init (int _om_poly_deg, int _k_poly_deg);
+  int init (unsigned maximum_om_poly_deg, unsigned maximum_k_poly_deg);
   int check ();
 
   disp_relation (const disp_relation &origin) = default;

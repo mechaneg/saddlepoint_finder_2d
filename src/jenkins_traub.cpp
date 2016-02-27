@@ -21,40 +21,40 @@ jenkins_traub::~jenkins_traub ()
   FREE_ARR (shi);
 }
 
-int jenkins_traub::init (int _degree)
+int jenkins_traub::init (unsigned max_degree)
 {
-  degree = _degree;
+  max_deg = max_degree;
 
   if (check () < 0)
     return -1;
 
-  pr  = new double[degree + 1];
-  pi  = new double[degree + 1];
-  hr  = new double[degree + 1];
-  hi  = new double[degree + 1];
-  qpr = new double[degree + 1];
-  qpi = new double[degree + 1];
-  qhr = new double[degree + 1];
-  qhi = new double[degree + 1];
-  shr = new double[degree + 1];
-  shi = new double[degree + 1];
+  pr  = new double[max_deg + 1];
+  pi  = new double[max_deg + 1];
+  hr  = new double[max_deg + 1];
+  hi  = new double[max_deg + 1];
+  qpr = new double[max_deg + 1];
+  qpi = new double[max_deg + 1];
+  qhr = new double[max_deg + 1];
+  qhi = new double[max_deg + 1];
+  shr = new double[max_deg + 1];
+  shi = new double[max_deg + 1];
 
   return 0;
 }
 
 int jenkins_traub::check ()
 {
-  if (degree <= 0)
+  if (max_deg == 0)
     return -1;
   return 0;
 }
 
-int jenkins_traub::cpoly (const double *opr, const double *opi, double *zeror, double *zeroi)
+int jenkins_traub::cpoly (const double *opr, const double *opi, unsigned actual_deg, double *zeror, double *zeroi)
 {
   int cnt1, cnt2, idnn2, i, conv;
   double xx, yy, cosr, sinr, smalno, base, xxx, zr, zi, bnd;
 
-  int degree_loc = degree;
+  int degree_loc = static_cast<int> (actual_deg);
 
   mcon (&eta, &infin, &smalno, &base);
   are = eta;
@@ -63,7 +63,7 @@ int jenkins_traub::cpoly (const double *opr, const double *opi, double *zeror, d
   yy = -xx;
   cosr = -0.060756474;
   sinr = -0.99756405;
-  nn = degree;
+  nn = static_cast<int> (max_deg);
 
   // Algorithm fails if the leading coefficient is zero
   if (opr[0] == 0 && opi[0] == 0)
