@@ -5,7 +5,9 @@
 
 #include <vector>
 #include <QString>
+
 #include "om_k.h"
+#include "om_k_evaluator.h"
 
 class report_system;
 class params;
@@ -20,7 +22,7 @@ private:
   std::vector<unsigned int> im_om_min_positions;    // indices of local minimums
 
 public:
-  int calc_points (report_system *rep, const params &param);
+  int calc_points (report_system *rep, const params &param, om_k_evaluator &evaluator);
   int calc_extremum_positions (report_system *rep);
   void calc_real_om_minmax ();
 

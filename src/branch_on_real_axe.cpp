@@ -1,7 +1,6 @@
 /// \file branch_on_real_axe.cpp
 
 #include "branch_on_real_axe.h"
-#include "jenkins_traub.h"
 #include "disp_relation.h"
 #include "common_defines.h"
 #include "om_k.h"
@@ -11,41 +10,26 @@
 #include <QFile>
 #include <cstdio>
 
-int branch_on_real_axe::calc_points (report_system *rep, const params &param)
+int branch_on_real_axe::calc_points (report_system *rep, const params &param, om_k_evaluator &evaluator)
 {
-  /// prepare computational workaround
-  jenkins_traub jt_om;
-  if (jt_om.init (MAX_OM_POLY_DEG) < 0)
-    {
-      rep->print ("Error: cannot initialize Jenkins-Traub computational method.\n");
-      return -1;
-    }
-
-  disp_relation disp_rel;
-  if (disp_rel.init (MAX_OM_POLY_DEG, MAX_K_POLY_DEG) < 0)
-    {
-      rep->print ("Error: cannot initialize computational workaround for dispersion relation");
-      return -1;
-    }
-
   /// compute omega values on real axe k
   points.emplace_back (0., 0.);
-  std::vector<complex> om_all_branches (MAX_OM_POLY_DEG);
 
-  unsigned int max_count = 1000000;   // max allowed steps
-  unsigned int count = 1;
+  unsigned max_count = 1000000;   // max allowed steps
+  unsigned count = 1;
   while (count++ < max_count)
     {
       points.emplace_back ();
       om_k &pair = points.back ();
       pair.k = complex (count * param.dx, 0.);
 
-      if (disp_rel.calc_om (om_all_branches, pair.k, param, jt_om) < 0)
+      if (evaluator.calc_om (pair.k, param) < 0)
         {
           rep->print ("Error: cannot compute omega for k = (%5.12lf, %5.12lf).\n",
-                      pair.k.real (), pair.om.imag ());
+                      pair.k.real (), pair.k.imag ());
           return -1;
         }
+      const std::vector<complex> &om_all_branches = evaluator.get_om_roots ();
 
       auto iter = om_all_branches.begin ();
       for (; iter != om_all_branches.end (); ++iter)

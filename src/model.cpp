@@ -53,7 +53,7 @@ int model::init_model (report_system *rep, const cmd_params &cmd)
 
 int model::calc_branch_on_real_axe (report_system *rep)
 {
-  if (real_axe.calc_points (rep, param) < 0)
+  if (real_axe.calc_points (rep, param, om_k_eval) < 0)
     return -1;
 
   real_axe.calc_real_om_minmax ();
