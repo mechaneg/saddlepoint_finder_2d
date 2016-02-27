@@ -8,6 +8,7 @@
 #include "om_k.h"
 #include "branch_on_real_axe.h"
 #include "equip_line.h"
+#include "om_k_evaluator.h"
 
 #include <complex>
 
@@ -22,8 +23,8 @@ private:
   input_output_files io_files;
   params param;
 
-  /// real axe info
   branch_on_real_axe real_axe;
+  om_k_evaluator om_k_eval;
   /// equipotential lines
   std::vector<equip_line> equip_lines;    // contains aaaal equipotential lines during finding of saddle point
                                           // for this real_axe.

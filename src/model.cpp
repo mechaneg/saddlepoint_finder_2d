@@ -45,6 +45,9 @@ int model::init_model (report_system *rep, const cmd_params &cmd)
       return -1;
     }
 
+  if (om_k_eval.init (MAX_OM_POLY_DEG, MAX_K_POLY_DEG) < 0)
+    return -1;
+
   return 0;
 }
 

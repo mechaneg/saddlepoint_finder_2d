@@ -15,14 +15,14 @@ int branch_on_real_axe::calc_points (report_system *rep, const params &param)
 {
   /// prepare computational workaround
   jenkins_traub jt_om;
-  if (jt_om.init (OM_POLY_DEG) < 0)
+  if (jt_om.init (MAX_OM_POLY_DEG) < 0)
     {
       rep->print ("Error: cannot initialize Jenkins-Traub computational method.\n");
       return -1;
     }
 
   disp_relation disp_rel;
-  if (disp_rel.init (OM_POLY_DEG, K_POLY_DEG) < 0)
+  if (disp_rel.init (MAX_OM_POLY_DEG, MAX_K_POLY_DEG) < 0)
     {
       rep->print ("Error: cannot initialize computational workaround for dispersion relation");
       return -1;
@@ -30,7 +30,7 @@ int branch_on_real_axe::calc_points (report_system *rep, const params &param)
 
   /// compute omega values on real axe k
   points.emplace_back (0., 0.);
-  std::vector<complex> om_all_branches (OM_POLY_DEG);
+  std::vector<complex> om_all_branches (MAX_OM_POLY_DEG);
 
   unsigned int max_count = 1000000;   // max allowed steps
   unsigned int count = 1;

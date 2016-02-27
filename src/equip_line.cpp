@@ -3,8 +3,45 @@
 #include "common_defines.h"
 #include "equip_line.h"
 #include "report_system.h"
+#include "om_k_evaluator.h"
 
+int calc_next_k_on_eqline (
+      report_system *rep,
+      //result
+      om_k &omega_k,
+      double om_delta,
+      const params &param,
+      om_k_evaluator &evaluator)
+{
+  complex om_next, k_next;
+  om_next = omega_k.om + om_delta;
 
+  if (evaluator.calc_k (om_next, param) < 0)
+    {
+      rep->print ("Error: cannot compute k for omega = (%5.12lf, %5.12lf).\n",
+                  om_next.real (), om_next.imag ());
+      return -1;
+    }
+  const std::vector<complex> &k_roots = evaluator.get_k_roots ();
+
+  // there is at least one root
+  k_next = k_roots[0];
+  double min_dist = abs (k_roots[0] - omega_k.k);
+  double cur_dist = 0.;
+
+  for (unsigned i = 1; i < k_roots.size (); i++)
+    {
+      cur_dist = abs (k_roots[i] - omega_k.k);
+      if (cur_dist < min_dist)
+        {
+          min_dist = cur_dist;
+          k_next = k_roots[i];
+        }
+    }
+
+  omega_k = om_k (om_next, k_next);
+  return 0;
+}
 
 // TODO: refactor. Index is bad idea. Branch on real axe in ok. Try put workplace, param, disp, jt_k in one object
 int equip_line::self_build (

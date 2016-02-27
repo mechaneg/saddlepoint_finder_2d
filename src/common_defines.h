@@ -24,8 +24,8 @@
 
 #define MIN_FOR_COMPARE 1.e-12
 
-#define OM_POLY_DEG 6
-#define  K_POLY_DEG 10
+#define MAX_OM_POLY_DEG 6
+#define MAX_K_POLY_DEG 10
 
 #define IM_OMEGA_MIN 1.e-10
 #define ROOT_SELECT_EPS 1.e-14
