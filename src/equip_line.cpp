@@ -69,20 +69,33 @@ int equip_line::self_build (
   prev = points.back ();
   next = prev;
 
+  double om_delta = param.d_om;
+  double distance = 0.;
   unsigned steps_done = 0;
   while (   prev.k.real () >= branch.get_re_om_min ()
          && prev.k.real () <= branch.get_re_om_max ())
     {
-      if (calc_next_k_on_eqline (rep, next, param.d_om, param, evaluator) < 0)
+      if (calc_next_k_on_eqline (rep, next, om_delta, param, evaluator) < 0)
         {
           rep->print ("Cannot build equipotential line, starting from k = (%5.12lf,%5.12lf)",
                       points[0].k.real (), points[0].k.imag ());
           return -1;
         }
 
-      // dist algo
+      // optimal distance algorithm
+      distance = std::abs (next.k - prev.k);
 
-      // dist algo
+      while (distance >= param.dx * 0.5) // magic 0.5
+        {
+          om_delta = om_delta * 0.75;   // magic 0.75
+
+	  prev = next;
+	  calc_next_k_on_eqline (rep, next, om_delta, param, evaluator);
+	  distance = std::abs (next.k - prev.k);
+	}
+
+      if (distance < param.dx * 0.25)  // magic 0.25
+        om_delta = om_delta * 1.5;     // magic 1.5
 
       // check intersection with real axe
       if (steps_done > 0 && sign (next.k.imag ()) != sign (prev.k.imag ()))
