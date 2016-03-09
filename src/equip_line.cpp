@@ -5,7 +5,9 @@
 #include "report_system.h"
 #include "om_k_evaluator.h"
 
-int calc_next_k_on_eqline (
+#include <cmath>
+
+static int calc_next_k_on_eqline (
       report_system *rep,
       //result
       om_k &omega_k,
@@ -43,30 +45,73 @@ int calc_next_k_on_eqline (
   return 0;
 }
 
-// TODO: refactor. Index is bad idea. Branch on real axe in ok. Try put workplace, param, disp, jt_k in one object
+//  The criteria for stop building eqline are following:
+//
+//  1) Constraint on Re (om): min Re (om) =< Re(om) <= max Re (om). -> 'intersection::no'
+//  2) Intersection with real axe on this complex sheet. -> 'intersection::good'
+//  3) Intersection with real axe on the other complex sheet. -> 'intersection::bad'
+//
+//
+//  Also there is empirical algorithm for balancing stepping size of delta Re(omega).
+//
+//
+
 int equip_line::self_build (
   report_system *rep,
-  branch_on_real_axe &branch,
-  std::vector<complex> &k_branches_workplace,
+  const branch_on_real_axe &branch,
   const params &param,
-  disp_relation &disp,
-  jenkins_traub &jt_k)
+  om_k_evaluator &evaluator)
 {
-  double min_dist = 0., cur_dist = 0.;
+  const std::vector<om_k> &real_axe_points = branch.get_points ();
+  points.push_back (real_axe_points[real_axe_index]);
 
-  // check size of branch_on_real_axe and disp and jt_k
+  om_k prev, next;
+  prev = points.back ();
+  next = prev;
 
-  const om_k &real_axe_point = branch.get_points ()[real_axe_index];
-  if (disp.calc_k (k_branches_workplace, real_axe_point.om, param, jt_k) < 0)
+  unsigned steps_done = 0;
+  while (   prev.k.real () >= branch.get_re_om_min ()
+         && prev.k.real () <= branch.get_re_om_max ())
     {
-      rep->print ("Error: cannot compute k for omega = (%5.12lf, %5.12lf).\n",
-                  real_axe_point.om.real (), real_axe_point.om.imag ());
-      return -1;
+      if (calc_next_k_on_eqline (rep, next, param.d_om, param, evaluator) < 0)
+        {
+          rep->print ("Cannot build equipotential line, starting from k = (%5.12lf,%5.12lf)",
+                      points[0].k.real (), points[0].k.imag ());
+          return -1;
+        }
+
+      // dist algo
+
+      // dist algo
+
+      // check intersection with real axe
+      if (steps_done > 0 && sign (next.k.imag ()) != sign (prev.k.imag ()))
+        {
+          double k_intersect = prev.k.real () - prev.k.imag () *
+                              (next.k - prev.k).real () / (next.k - prev.k).imag ();
+
+          int intersect_index_l = std::floor (k_intersect / param.dx);
+          int intersect_index_r = intersect_index_l + 1;
+
+          double im_om_left  = real_axe_points[intersect_index_l].om.imag ();
+          double im_om_right = real_axe_points[intersect_index_r].om.imag ();
+
+          // check if the sheet is right
+          if (next.om.imag () >= std::min (im_om_left, im_om_right) &&
+              next.om.imag () <= std::max (im_om_left, im_om_right))
+            state = real_axe_intersection::good;
+          else
+            state = real_axe_intersection::bad;
+
+          points.push_back (next);
+          // let's get out of here
+          break;
+        }
+
+      points.push_back (next);
+      prev = next;
+      steps_done++;
     }
-
-
-  FIX_UNUSED (min_dist);
-  FIX_UNUSED (cur_dist);
 
   return 0;
 }

@@ -19,26 +19,23 @@ typedef std::complex<double> complex;
 class equip_line
 {
 private:
-  unsigned int real_axe_index = 0;
+  unsigned real_axe_index = 0;
   std::vector<om_k> points;
-  real_axe_intersection state = real_axe_intersection::null;
+  real_axe_intersection state = real_axe_intersection::no;
 
 public:
 
-  equip_line (unsigned int real_axe_index_) : real_axe_index (real_axe_index_) {}
+  equip_line (unsigned real_axe_index_) : real_axe_index (real_axe_index_) {}
   ~equip_line () {}
 
-  inline unsigned int get_real_axe_index () { return real_axe_index; }
+  inline unsigned get_real_axe_index () { return real_axe_index; }
   inline const std::vector<om_k>& get_points () { return points; }
   inline real_axe_intersection get_state () { return state; }
 
-  int self_build (
-    report_system *rep,
-    branch_on_real_axe &branch,
-    std::vector<complex> &k_branches_workplace,
+  int self_build (report_system *rep,
+    const branch_on_real_axe &branch,
     const params &param,
-    disp_relation &disp,
-    jenkins_traub &jt_k);
+    om_k_evaluator &evaluator);
 
 };
 

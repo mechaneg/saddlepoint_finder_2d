@@ -11,6 +11,7 @@ const char* params::Mw_name = "Mw";
 const char* params::D_name  = "D";
 const char* params::mu_name = "mu";
 const char* params::dx_name = "dx";
+const char* params::d_om_name = "d_om_name";
 
 int params::check_params (report_system *rep)
 {
@@ -46,7 +47,7 @@ int params::check_params (report_system *rep)
     }
   else if (D < 0.)
     {
-      rep->print ("Error: 'M' parameter shouldn't be negative.\n");
+      rep->print ("Error: 'D' parameter shouldn't be negative.\n");
       return -1;
     }
 
@@ -70,7 +71,19 @@ int params::check_params (report_system *rep)
     }
   else if (dx < MIN_FOR_COMPARE)
     {
-      rep->print ("Error: 'mu' parameter should be positive.\n");
+      rep->print ("Error: 'dx' parameter should be positive.\n");
+      return -1;
+    }
+
+  ///// d_om
+  if (d_om_is_default)
+    {
+      rep->print ("Error: 'd_om' parameter was not set.\n");
+      return -1;
+    }
+  else if (d_om < MIN_FOR_COMPARE)
+    {
+      rep->print ("Error: 'd_om' parameter should be positive.\n");
       return -1;
     }
 
@@ -103,6 +116,11 @@ int params::init_single_param (const char *param_name, double param)
     {
       dx = param;
       dx_is_default = 0;
+    }
+  else if (!strcmp (param_name, d_om_name))
+    {
+      d_om = param;
+      d_om_is_default = 0;
     }
   else
     return -1;

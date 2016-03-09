@@ -19,6 +19,10 @@
       delete[] (x);  \
   }while (0)         \
 
+inline int sign (double x)
+{
+  return (x > 0.) - (x < 0.);
+}
 
 #define CHAR_BUF_LEN 4096
 

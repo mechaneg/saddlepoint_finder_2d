@@ -5,10 +5,9 @@
 
 enum class real_axe_intersection
 {
-  null,
   good,
   bad,
-  no_intersect
+  no
 };
 
 #endif // REAL_AXE_INTERSECTION_STATE_H
