@@ -11,7 +11,7 @@ const char* params::Mw_name = "Mw";
 const char* params::D_name  = "D";
 const char* params::mu_name = "mu";
 const char* params::dx_name = "dx";
-const char* params::d_om_name = "d_om_name";
+const char* params::d_om_name = "d_om";
 
 int params::check_params (report_system *rep)
 {
