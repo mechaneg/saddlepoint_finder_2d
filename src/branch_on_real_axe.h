@@ -32,8 +32,8 @@ public:
   inline double get_re_om_max () const { return re_om_max; }
 
   inline const std::vector<om_k>& get_points () const { return points; }
-  inline const std::vector<unsigned int>& get_im_om_max_positions () { return im_om_max_positions; }
-  inline const std::vector<unsigned int>& get_im_om_min_positions () { return im_om_min_positions; }
+  inline const std::vector<unsigned int>& get_im_om_max_positions () const { return im_om_max_positions; }
+  inline const std::vector<unsigned int>& get_im_om_min_positions () const { return im_om_min_positions; }
 };
 
 #endif

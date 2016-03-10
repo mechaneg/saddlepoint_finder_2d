@@ -38,5 +38,13 @@ int model_controller::process_model ()
     }
   rep->print ("Info: branch info on real axe was successfully calculated.\n");
 
+  /// calculate all equipotential lines
+  if (m_model.calc_equip_lines (rep) < 0)
+    {
+      rep->print ("Error: cannot calculate equipotential lines, outgoing from the real axe.\n");
+      return -1;
+    }
+  rep->print ("Info: equipotential lines, outgoing from the real axe, were successfully calculated.\n");
+
   return 0;
 }

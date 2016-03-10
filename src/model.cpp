@@ -72,7 +72,13 @@ int model::calc_branch_on_real_axe (report_system *rep)
 
 int model::calc_equip_lines (report_system *rep)
 {
-  FIX_UNUSED (rep);
+  unsigned points_total = real_axe.get_points ().size ();
+  for (unsigned ind = 1; ind < points_total; ind++)  // skip k = (0, 0)
+    {
+      equip_lines.emplace_back (ind);
+      if (equip_lines.back ().self_build (rep, real_axe, param, om_k_eval) < 0)
+        return -1;
+    }
 
   return 0;
 }
