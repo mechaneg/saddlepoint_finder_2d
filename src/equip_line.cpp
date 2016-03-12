@@ -56,29 +56,28 @@ static int calc_next_k_on_eqline (
 //
 //
 
-int equip_line::self_build (
-  report_system *rep,
-  const branch_on_real_axe &branch,
+int equip_line::self_build_until_real_axe_intersection (report_system *rep,
+  const branch_on_real_axe &real_axe,
   const params &param,
+  double om_delta,
   om_k_evaluator &evaluator)
 {
-  const std::vector<om_k> &real_axe_points = branch.get_points ();
-  points.push_back (real_axe_points[real_axe_index]);
+  const std::vector<om_k> &real_axe_points = real_axe.get_points ();
+  points.push_back (reference_point);
 
   om_k prev, next;
   prev = points.back ();
   next = prev;
 
-  double om_delta = param.d_om;
   double distance = 0.;
   unsigned steps_done = 0;
-  while (   prev.k.real () >= branch.get_re_om_min ()
-         && prev.k.real () <= branch.get_re_om_max ())
+  while (   prev.k.real () >= real_axe.get_re_om_min ()
+         && prev.k.real () <= real_axe.get_re_om_max ())
     {
       if (calc_next_k_on_eqline (rep, next, om_delta, param, evaluator) < 0)
         {
           rep->print ("Cannot build equipotential line, starting from k = (%5.12lf,%5.12lf)",
-                      points[0].k.real (), points[0].k.imag ());
+                      reference_point.k.real (), reference_point.k.imag ());
           return -1;
         }
 
