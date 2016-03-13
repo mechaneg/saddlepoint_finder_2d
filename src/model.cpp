@@ -74,7 +74,7 @@ int model::calc_equip_lines (report_system *rep)
 {
   const std::vector<om_k> &points = real_axe.get_points ();
   std::vector<om_k>::const_iterator point_iter = points.begin () + 1;    // skip k = (0, 0)
-  for (; point_iter != points.end (); point_iter++)
+  for (; point_iter != points.end () - 1; point_iter++)                  // and last k
     {
       // line with positive d_omega
       equip_lines.emplace_back (*point_iter);
