@@ -45,6 +45,55 @@ static int calc_next_k_on_eqline (
   return 0;
 }
 
+// Build equipotential line beginning in reference point,
+// until total amount of added om_delta (absolute value) reached om_delta_total.
+
+int equip_line::self_build (report_system *rep,
+  const params &param,
+  double om_delta,        // starting value of om_delta
+  double om_delta_total,  // absolute value of Re (om_last) - Re (om_first)
+  om_k_evaluator &evaluator)
+{
+  points.push_back (reference_point);
+
+  om_k prev = reference_point;
+  om_k next = prev;
+
+  double distance = 0.;
+  double om_added_total = 0.;
+
+  while (std::abs (om_added_total) < om_delta_total)
+    {
+      if (calc_next_k_on_eqline (rep, next, om_delta, param, evaluator) < 0)
+        return -1;
+
+      // optimal distance algorithm
+      distance = std::abs (next.k - prev.k);
+
+      while (distance >= param.dx * 0.5) // magic 0.5
+        {
+          om_delta = om_delta * 0.75;   // magic 0.75
+
+          prev = next;
+          if (calc_next_k_on_eqline (rep, next, om_delta, param, evaluator) < 0)
+            return -1;
+          distance = std::abs (next.k - prev.k);
+        }
+
+      om_added_total += om_delta;
+
+      if (distance < param.dx * 0.25)  // magic 0.25
+        om_delta = om_delta * 1.5;     // magic 1.5
+
+      points.push_back (next);
+      prev = next;
+    }
+
+  is_build_flag = true;
+  return 0;
+}
+
+
 //  The criteria for stop building eqline are following:
 //
 //  1) Constraint on Re (om): min Re (om) =< Re(om) <= max Re (om). -> 'intersection::no'
@@ -62,11 +111,11 @@ int equip_line::self_build_until_real_axe_intersection (report_system *rep,
   double om_delta,
   om_k_evaluator &evaluator)
 {
-  const std::vector<om_k> &real_axe_points = real_axe.get_points ();
   points.push_back (reference_point);
+  const std::vector<om_k> &real_axe_points = real_axe.get_points ();
 
   om_k prev, next;
-  prev = points.back ();
+  prev = reference_point;
   next = prev;
 
   double distance = 0.;
@@ -125,5 +174,6 @@ int equip_line::self_build_until_real_axe_intersection (report_system *rep,
       steps_done++;
     }
 
+  is_build_flag = true;
   return 0;
 }
