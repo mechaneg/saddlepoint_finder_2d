@@ -12,6 +12,7 @@ const char* params::D_name  = "D";
 const char* params::mu_name = "mu";
 const char* params::dx_name = "dx";
 const char* params::d_om_name = "d_om";
+const char* params::d_om_total_name = "d_om_total";
 
 int params::check_params (report_system *rep)
 {
@@ -87,6 +88,18 @@ int params::check_params (report_system *rep)
       return -1;
     }
 
+  ///// d_om_total
+  if (d_om_total_is_default)
+    {
+      rep->print ("Error: 'd_om_total' parameter was not set.\n");
+      return -1;
+    }
+  else if (d_om_total < MIN_FOR_COMPARE)
+    {
+      rep->print ("Error: 'd_om_total' parameter should be positive.\n");
+      return -1;
+    }
+
   return 0;
 }
 
@@ -121,6 +134,11 @@ int params::init_single_param (const char *param_name, double param)
     {
       d_om = param;
       d_om_is_default = 0;
+    }
+  else if (!strcmp (param_name, d_om_total_name))
+    {
+      d_om_total = param;
+      d_om_total_is_default = 0;
     }
   else
     return -1;

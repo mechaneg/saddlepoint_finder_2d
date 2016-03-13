@@ -15,6 +15,7 @@ public:
   double mu = 0.;
   double dx = 0.;
   double d_om = 0.;
+  double d_om_total = 0.;
 
   int M_is_default  = 1;
   int Mw_is_default = 1;
@@ -22,6 +23,7 @@ public:
   int mu_is_default = 1;
   int dx_is_default = 1;
   int d_om_is_default = 1;
+  int d_om_total_is_default = 1;
 
   static const char* M_name;
   static const char* Mw_name;
@@ -29,6 +31,7 @@ public:
   static const char* mu_name;
   static const char* dx_name;
   static const char* d_om_name;
+  static const char* d_om_total_name;
 
   int init_by_file (report_system *rep, FILE *file);
   int check_params (report_system *rep);
