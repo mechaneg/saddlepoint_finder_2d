@@ -99,20 +99,7 @@ int branch_on_real_axe::calc_extremum_positions (report_system *rep)
 
 int branch_on_real_axe::dump_points (report_system *rep, const std::string &file_name)
 {
-  FILE *file = nullptr;
-  if (!(file = fopen (file_name.c_str (), "w")))
-    {
-      rep->print ("Error: cannont open file '%s'.\n", file_name.c_str ());
-      return -1;
-    }
-
-  fprintf (file, "Re(k)\tIm(k)\tRe(om)\tIm(om):\n");
-  for (const auto &pair : points)
-    {
-      fprintf (file, "%5.12lf\t%5.12lf\t%5.12lf\t%5.12lf\n",
-               pair.k.real (), pair.k.imag (), pair.om.real (), pair.om.imag ());
-    }
-
-  fclose (file);
+  if (dump_vector_of_om_k (points, rep, file_name) < 0)
+    return -1;
   return 0;
 }

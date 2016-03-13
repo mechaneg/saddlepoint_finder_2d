@@ -170,3 +170,10 @@ int equip_line::self_build_until_real_axe_intersection (report_system *rep,
   is_build_flag = true;
   return 0;
 }
+
+int equip_line::dump_points (report_system *rep, const std::string &file_name) const
+{
+  if (dump_vector_of_om_k (points, rep, file_name) < 0)
+    return -1;
+  return 0;
+}

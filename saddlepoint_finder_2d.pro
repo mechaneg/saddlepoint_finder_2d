@@ -15,7 +15,8 @@ SOURCES += \
     src/file_system.cpp \
     src/branch_on_real_axe.cpp \
     src/equip_line.cpp \
-    src/om_k_evaluator.cpp
+    src/om_k_evaluator.cpp \
+    src/om_k.cpp
 
 HEADERS += \
     src/common_defines.h \

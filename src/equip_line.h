@@ -46,6 +46,7 @@ public:
     double om_delta,
     om_k_evaluator &evaluator);
 
+  int dump_points (report_system *rep, const std::string &file_name) const;
 };
 
 
