@@ -73,11 +73,19 @@ int model::calc_branch_on_real_axe (report_system *rep)
 int model::calc_equip_lines (report_system *rep)
 {
   const std::vector<om_k> &points = real_axe.get_points ();
-  auto point_iter = points.begin () + 1;    // skip k = (0, 0)
+  std::vector<om_k>::const_iterator point_iter = points.begin () + 1;    // skip k = (0, 0)
   for (; point_iter != points.end (); point_iter++)
     {
       equip_lines.emplace_back (*point_iter);
-      if (equip_lines.back ().self_build_until_real_axe_intersection (rep, real_axe, param, param.d_om, om_k_eval) < 0)
+      if (equip_lines.back ().self_build (rep, param, param.d_om, param.d_om_total, om_k_eval) < 0)
+        {
+          rep->print ("Cannot build equipotential line from reference k = (%5.12lf,%5.12lf)",
+                      point_iter->k.real (), point_iter->k.imag ());
+          return -1;
+        }
+
+      equip_lines.emplace_back (*point_iter);
+      if (equip_lines.back ().self_build (rep, param, -param.d_om, param.d_om_total, om_k_eval) < 0)
         {
           rep->print ("Cannot build equipotential line from reference k = (%5.12lf,%5.12lf)",
                       point_iter->k.real (), point_iter->k.imag ());
