@@ -7,6 +7,18 @@
 
 #include <cmath>
 
+const char* enum_to_string (const equip_line_direction eqline_dir)
+{
+  switch (eqline_dir)
+    {
+    case equip_line_direction::positive:
+      return "positive";
+    case equip_line_direction::negative:
+      return "negative";
+    }
+  return "positive";
+}
+
 static int calc_next_k_on_eqline (
       report_system *rep,
       //result
@@ -88,6 +100,11 @@ int equip_line::self_build (report_system *rep,
       prev = next;
     }
 
+  if (om_delta > 0)
+    direction = equip_line_direction::positive;
+  else
+    direction = equip_line_direction::negative;
+
   is_build_flag = true;
   return 0;
 }
@@ -153,9 +170,9 @@ int equip_line::self_build_until_real_axe_intersection (report_system *rep,
           // check if the sheet is right
           if (next.om.imag () >= std::min (im_om_left, im_om_right) &&
               next.om.imag () <= std::max (im_om_left, im_om_right))
-            state = real_axe_intersection::good;
+            intersection_state = real_axe_intersection::good;
           else
-            state = real_axe_intersection::bad;
+            intersection_state = real_axe_intersection::bad;
 
           points.push_back (next);
           // let's get out of here
@@ -166,6 +183,11 @@ int equip_line::self_build_until_real_axe_intersection (report_system *rep,
       prev = next;
       steps_done++;
     }
+
+  if (om_delta > 0)
+    direction = equip_line_direction::positive;
+  else
+    direction = equip_line_direction::negative;
 
   is_build_flag = true;
   return 0;

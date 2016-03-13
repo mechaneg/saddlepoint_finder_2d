@@ -101,6 +101,7 @@ int model::calc_equip_lines (report_system *rep)
       std::string file_name = io_files.results_path.toStdString () +
                               std::string ("equip_line_from_k=") +
                               std::to_string (line.get_ref_point ().k.real ()) +
+                              std::string (enum_to_string (line.get_direction ())) +
                               io_files.res_suffix.toStdString ();
 
       if (line.dump_points (rep, file_name) < 0)
