@@ -10,13 +10,14 @@
 static int calc_next_k_on_eqline (
       report_system *rep,
       //result
-      om_k &omega_k,
+      om_k &om_k_next,
+      const om_k &om_k_prev,
       double om_delta,
       const params &param,
       om_k_evaluator &evaluator)
 {
   complex om_next, k_next;
-  om_next = omega_k.om + om_delta;
+  om_next = om_k_prev.om + om_delta;
 
   if (evaluator.calc_k (om_next, param) < 0)
     {
@@ -28,12 +29,12 @@ static int calc_next_k_on_eqline (
 
   // there is at least one root
   k_next = k_roots[0];
-  double min_dist = abs (k_roots[0] - omega_k.k);
+  double min_dist = abs (k_roots[0] - om_k_prev.k);
   double cur_dist = 0.;
 
   for (unsigned i = 1; i < k_roots.size (); i++)
     {
-      cur_dist = abs (k_roots[i] - omega_k.k);
+      cur_dist = abs (k_roots[i] - om_k_prev.k);
       if (cur_dist < min_dist)
         {
           min_dist = cur_dist;
@@ -41,7 +42,7 @@ static int calc_next_k_on_eqline (
         }
     }
 
-  omega_k = om_k (om_next, k_next);
+  om_k_next = om_k (om_next, k_next);
   return 0;
 }
 
@@ -56,15 +57,14 @@ int equip_line::self_build (report_system *rep,
 {
   points.push_back (reference_point);
 
-  om_k prev = reference_point;
-  om_k next = prev;
+  om_k prev = reference_point, next;
 
   double distance = 0.;
   double om_added_total = 0.;
 
   while (std::abs (om_added_total) < om_delta_total)
     {
-      if (calc_next_k_on_eqline (rep, next, om_delta, param, evaluator) < 0)
+      if (calc_next_k_on_eqline (rep, next, prev, om_delta, param, evaluator) < 0)
         return -1;
 
       // optimal distance algorithm
@@ -74,8 +74,7 @@ int equip_line::self_build (report_system *rep,
         {
           om_delta = om_delta * 0.75;   // magic 0.75
 
-          prev = next;
-          if (calc_next_k_on_eqline (rep, next, om_delta, param, evaluator) < 0)
+          if (calc_next_k_on_eqline (rep, next, prev, om_delta, param, evaluator) < 0)
             return -1;
           distance = std::abs (next.k - prev.k);
         }
@@ -114,16 +113,14 @@ int equip_line::self_build_until_real_axe_intersection (report_system *rep,
   points.push_back (reference_point);
   const std::vector<om_k> &real_axe_points = real_axe.get_points ();
 
-  om_k prev, next;
-  prev = reference_point;
-  next = prev;
+  om_k prev = reference_point, next;
 
   double distance = 0.;
   unsigned steps_done = 0;
   while (   prev.k.real () >= real_axe.get_re_om_min ()
          && prev.k.real () <= real_axe.get_re_om_max ())
     {
-      if (calc_next_k_on_eqline (rep, next, om_delta, param, evaluator) < 0)
+      if (calc_next_k_on_eqline (rep, next, prev, om_delta, param, evaluator) < 0)
         {
           rep->print ("Cannot build equipotential line, starting from k = (%5.12lf,%5.12lf)",
                       reference_point.k.real (), reference_point.k.imag ());
@@ -137,8 +134,7 @@ int equip_line::self_build_until_real_axe_intersection (report_system *rep,
         {
           om_delta = om_delta * 0.75;   // magic 0.75
 
-	  prev = next;
-	  calc_next_k_on_eqline (rep, next, om_delta, param, evaluator);
+	  calc_next_k_on_eqline (rep, next, prev, om_delta, param, evaluator);
 	  distance = std::abs (next.k - prev.k);
 	}
 
