@@ -78,7 +78,11 @@ int model::calc_equip_lines (report_system *rep)
     {
       equip_lines.emplace_back (*point_iter);
       if (equip_lines.back ().self_build_until_real_axe_intersection (rep, real_axe, param, param.d_om, om_k_eval) < 0)
-        return -1;
+        {
+          rep->print ("Cannot build equipotential line from reference k = (%5.12lf,%5.12lf)",
+                      point_iter->k.real (), point_iter->k.imag ());
+          return -1;
+        }
     }
 
   return 0;

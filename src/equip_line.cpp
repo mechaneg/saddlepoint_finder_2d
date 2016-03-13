@@ -121,11 +121,7 @@ int equip_line::self_build_until_real_axe_intersection (report_system *rep,
          && prev.k.real () <= real_axe.get_re_om_max ())
     {
       if (calc_next_k_on_eqline (rep, next, prev, om_delta, param, evaluator) < 0)
-        {
-          rep->print ("Cannot build equipotential line, starting from k = (%5.12lf,%5.12lf)",
-                      reference_point.k.real (), reference_point.k.imag ());
-          return -1;
-        }
+        return -1;
 
       // optimal distance algorithm
       distance = std::abs (next.k - prev.k);
@@ -134,7 +130,8 @@ int equip_line::self_build_until_real_axe_intersection (report_system *rep,
         {
           om_delta = om_delta * 0.75;   // magic 0.75
 
-	  calc_next_k_on_eqline (rep, next, prev, om_delta, param, evaluator);
+	  if (calc_next_k_on_eqline (rep, next, prev, om_delta, param, evaluator) < 0)
+	    return -1;
 	  distance = std::abs (next.k - prev.k);
 	}
 
