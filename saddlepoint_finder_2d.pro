@@ -1,5 +1,17 @@
 QMAKE_CXXFLAGS += -std=c++11 -Wall
 
+CONFIG+=debug_and_release
+
+CONFIG(release, debug|release){
+  DESTDIR = build/build
+  OBJECTS_DIR = $$DESTDIR
+  MOC_DIR = $$DESTDIR
+}else{
+  DESTDIR = build/build.dbg
+  OBJECTS_DIR = $$DESTDIR
+  MOC_DIR = $$DESTDIR
+}
+
 QT += core
 
 SOURCES += \
