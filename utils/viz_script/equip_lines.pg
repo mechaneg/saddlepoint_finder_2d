@@ -1,0 +1,40 @@
+#!/usr/bin/gnuplot
+
+reset
+
+# eps
+set terminal postscript eps size 4.5,2.62 enhanced color font 'Helvetica,20' lw 2
+set output 'equip_lines.eps'
+
+# Line styles
+set border linewidth 1.
+
+# Legend
+#set key at 6.1,1.3
+
+# Axes label 
+set xlabel '{/Helvetica-Oblique Re(k)}'
+set ylabel '{/Helvetica-Oblique Im(k)}'
+
+# Axis ranges
+#set xrange[0:0.15]
+#set yrange[-0.00001:0.000005]
+set xrange[0.01:0.105]
+set yrange[-0.0001:0.0001]
+
+
+# Axis labels
+#set xtics 0.04
+#set ytics 0.0004
+#set tics scale 0.75
+
+# Plot
+filenames=system('ls ./RESULTS/equip_line_from_k*positive*')
+
+# function for iterating through filenames
+item(n)=word(filenames,n)
+
+plot for [i=1:words(filenames):10] item(i) using 1:2 with points pt 5 ps 0.5 lc rgb "blue" notitle
+
+
+#
