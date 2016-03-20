@@ -1,4 +1,4 @@
-QMAKE_CXXFLAGS += -std=c++11 -Wall
+QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-unused-but-set-variable
 
 CONFIG+=debug_and_release
 
