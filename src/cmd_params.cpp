@@ -6,8 +6,7 @@
 
 enum CMD : int
 {
-  PROG_NAME  = 0,
-  MODEL_NAME = 1
+  MODEL_NAME = 0
 };
 
 int cmd_params::parse_cmd (report_system *rep, int argc, char *argv[])
@@ -18,13 +17,10 @@ int cmd_params::parse_cmd (report_system *rep, int argc, char *argv[])
       return -1;
     }
 
-  for (int i = 0; i < argc; i++)
+  for (int i = 1; i < argc; i++)
     {
       switch (i)
         {
-          case CMD::PROG_NAME:
-            prog_name = std::string (argv[i]);
-            break;
           case CMD::MODEL_NAME:
             model_name = std::string (argv[i]);
             break;
@@ -40,12 +36,3 @@ const std::string& cmd_params::get_model_name () const
 {
   return model_name;
 }
-
-const std::string& cmd_params::get_prog_name () const
-{
-  return prog_name;
-}
-
-
-
-
