@@ -17,6 +17,14 @@ typedef std::complex<double> complex;
 struct cmd_params;
 class report_system;
 
+enum class equip_lines_mode
+{
+  asymptotics,
+  global_picture
+};
+
+const char* enum_to_string (equip_lines_mode mode);
+
 class model
 {
 private:
@@ -30,6 +38,8 @@ private:
                                           // for this real_axe.
                                           // refactor it. that's ugly
 
+  equip_lines_mode calc_mode = equip_lines_mode::asymptotics;
+
 private:
   int init_params_by_file (report_system *rep);
 
@@ -40,6 +50,8 @@ public:
   int init_model (report_system *rep, const cmd_params &cmd);
   int calc_branch_on_real_axe (report_system *rep);
   int calc_equip_lines (report_system *rep);
+
+  equip_lines_mode get_calc_mode ();
 };
 
 #endif // MODEL_H

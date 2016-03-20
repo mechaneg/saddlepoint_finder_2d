@@ -5,6 +5,19 @@
 #include "cmdline.h"
 
 
+const char* enum_to_string (equip_lines_mode mode)
+{
+  switch (mode)
+    {
+    case equip_lines_mode::asymptotics:
+      return "asymptotics";
+    case equip_lines_mode::global_picture:
+      return "global_picture";
+    }
+
+  return nullptr;
+}
+
 model::model() {}
 
 model::~model () {}
@@ -36,6 +49,22 @@ int model::init_model (report_system *rep, const cmd_params &cmd)
 {
   if (io_files.construct_names (rep, cmd) < 0)
     return -1;
+
+  if (strcmp (cmd.equip_lines_arg, enum_to_string (equip_lines_mode::asymptotics)) == 0)
+    {
+      calc_mode = equip_lines_mode::asymptotics;
+      rep->print ("Info: '%s' mode is activated.\n", cmd.equip_lines_arg);
+    }
+  else if (strcmp (cmd.equip_lines_arg, enum_to_string (equip_lines_mode::global_picture)) == 0)
+    {
+      calc_mode = equip_lines_mode::global_picture;
+      rep->print ("Info: '%s mode is activated.\n", cmd.equip_lines_arg);
+    }
+  else
+    {
+      rep->print ("Error: unknown equip_line mode '%s'.\n", cmd.equip_lines_arg);
+      return -1;
+    }
 
   if (io_files.create_result_dir (rep) < 0)
     return -1;
@@ -114,6 +143,11 @@ int model::calc_equip_lines (report_system *rep)
     }
 
   return 0;
+}
+
+equip_lines_mode model::get_calc_mode ()
+{
+  return calc_mode;
 }
 
 
