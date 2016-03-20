@@ -1,16 +1,18 @@
-QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-unused-but-set-variable
+QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-but-set-variable -Wall
 
 CONFIG+=debug_and_release
 
+CONFIG(debug, debug|release){
+  DESTDIR = build/build.dbg
+  message("qmake debug")
+}
 CONFIG(release, debug|release){
   DESTDIR = build/build
-  OBJECTS_DIR = $$DESTDIR
-  MOC_DIR = $$DESTDIR
-}else{
-  DESTDIR = build/build.dbg
-  OBJECTS_DIR = $$DESTDIR
-  MOC_DIR = $$DESTDIR
+  message("qmake release")
 }
+
+OBJECTS_DIR = $$DESTDIR
+MOC_DIR     = $$DESTDIR
 
 QT += core
 
