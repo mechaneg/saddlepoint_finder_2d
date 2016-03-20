@@ -2,6 +2,7 @@
 
 #include "model.h"
 #include "report_system.h"
+#include "cmdline.h"
 
 
 model::model() {}

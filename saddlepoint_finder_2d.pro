@@ -18,7 +18,6 @@ SOURCES += \
     src/main.cpp \
     src/model_controller.cpp \
     src/model.cpp \
-    src/cmd_params.cpp \
     src/report_system.cpp \
     src/input_output_files.cpp \
     src/params.cpp \
@@ -28,14 +27,14 @@ SOURCES += \
     src/branch_on_real_axe.cpp \
     src/equip_line.cpp \
     src/om_k_evaluator.cpp \
-    src/om_k.cpp
+    src/om_k.cpp \
+    src/cmdline.c
 
 HEADERS += \
     src/common_defines.h \
     src/model_controller.h \
     src/params.h \
     src/model.h \
-    src/cmd_params.h \
     src/report_system.h \
     src/input_output_files.h \
     src/om_k.h \
@@ -45,4 +44,5 @@ HEADERS += \
     src/branch_on_real_axe.h \
     src/equip_line.h \
     src/real_axe_intersection_state.h \
-    src/om_k_evaluator.h
+    src/om_k_evaluator.h \
+    src/cmdline.h

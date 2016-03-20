@@ -1,12 +1,11 @@
 #ifndef INPUT_OUTPUT_FILES_H
 #define INPUT_OUTPUT_FILES_H
 
-#include "cmd_params.h"
 #include "common_defines.h"
 
 #include <QString>
 
-class cmd_params;
+struct cmd_params;
 class report_system;
 
 class input_output_files

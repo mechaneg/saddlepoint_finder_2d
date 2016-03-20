@@ -14,7 +14,7 @@ model_controller::~model_controller ()
 
 int model_controller::init_internal_structures (int argc, char *argv[])
 {
-  if (cmd_param.parse_cmd (rep, argc, argv) < 0)
+  if (cmdline_parser (argc, argv, &cmd_param) != 0)
     return -1;
 
   return 0;

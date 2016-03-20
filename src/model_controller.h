@@ -2,7 +2,7 @@
 #define MODEL_CONTROLLER_H
 
 #include "model.h"
-#include "cmd_params.h"
+#include "cmdline.h"
 class report_system;
 
 class model_controller

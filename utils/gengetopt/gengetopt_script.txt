@@ -1,0 +1,4 @@
+call it from directory where cmd_line.ggo is laying.
+
+gengetopt --arg-struct-name=cmd_params --input=cmd_line.ggo --output-dir=../../src --include-getopt
+

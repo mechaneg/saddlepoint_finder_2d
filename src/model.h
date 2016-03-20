@@ -14,7 +14,7 @@
 
 typedef std::complex<double> complex;
 
-class cmd_params;
+struct cmd_params;
 class report_system;
 
 class model

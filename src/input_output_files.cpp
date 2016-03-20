@@ -1,8 +1,9 @@
 /// \file input_output_files.cpp
 
+#include "cmdline.h"
+#include "file_system.h"
 #include "input_output_files.h"
 #include "report_system.h"
-#include "file_system.h"
 
 #include <QDir>
 
@@ -13,7 +14,7 @@ const QString input_output_files::real_axe_suffix = "real_axe";
 
 int input_output_files::abs_model_name_init (report_system *rep, const cmd_params &cmd)
 {
-  QString cmd_model_name (cmd.get_model_name ().c_str ());
+  QString cmd_model_name (cmd.filename_arg);
 
   if (is_abs_filename (cmd_model_name.toStdString ().c_str ()))
     abs_model_name = std::move (cmd_model_name);

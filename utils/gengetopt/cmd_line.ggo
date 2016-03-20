@@ -1,0 +1,5 @@
+version "20.03.2016"
+package "saddlepoint_finder_2d"
+purpose "for phd"
+
+option "filename" f "name of file" required string
