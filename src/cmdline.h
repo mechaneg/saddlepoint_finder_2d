@@ -42,10 +42,14 @@ struct cmd_params
   char * filename_arg;	/**< @brief name of file.  */
   char * filename_orig;	/**< @brief name of file original value given at command line.  */
   const char *filename_help; /**< @brief name of file help description.  */
+  char * equip_lines_arg;	/**< @brief what to build. supported variants=global-picture,asymptotics.  */
+  char * equip_lines_orig;	/**< @brief what to build. supported variants=global-picture,asymptotics original value given at command line.  */
+  const char *equip_lines_help; /**< @brief what to build. supported variants=global-picture,asymptotics help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
   unsigned int filename_given ;	/**< @brief Whether filename was given.  */
+  unsigned int equip_lines_given ;	/**< @brief Whether equip-lines was given.  */
 
 } ;
 

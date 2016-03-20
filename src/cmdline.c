@@ -33,9 +33,10 @@ const char *cmd_params_versiontext = "";
 const char *cmd_params_description = "";
 
 const char *cmd_params_help[] = {
-  "  -h, --help             Print help and exit",
-  "  -V, --version          Print version and exit",
-  "  -f, --filename=STRING  name of file",
+  "  -h, --help                Print help and exit",
+  "  -V, --version             Print version and exit",
+  "  -f, --filename=STRING     name of file",
+  "  -e, --equip-lines=STRING  what to build. supported\n                              variants=global-picture,asymptotics",
     0
 };
 
@@ -64,6 +65,7 @@ void clear_given (struct cmd_params *args_info)
   args_info->help_given = 0 ;
   args_info->version_given = 0 ;
   args_info->filename_given = 0 ;
+  args_info->equip_lines_given = 0 ;
 }
 
 static
@@ -72,6 +74,8 @@ void clear_args (struct cmd_params *args_info)
   FIX_UNUSED (args_info);
   args_info->filename_arg = NULL;
   args_info->filename_orig = NULL;
+  args_info->equip_lines_arg = NULL;
+  args_info->equip_lines_orig = NULL;
   
 }
 
@@ -83,6 +87,7 @@ void init_args_info(struct cmd_params *args_info)
   args_info->help_help = cmd_params_help[0] ;
   args_info->version_help = cmd_params_help[1] ;
   args_info->filename_help = cmd_params_help[2] ;
+  args_info->equip_lines_help = cmd_params_help[3] ;
   
 }
 
@@ -168,6 +173,8 @@ cmdline_parser_release (struct cmd_params *args_info)
 
   free_string_field (&(args_info->filename_arg));
   free_string_field (&(args_info->filename_orig));
+  free_string_field (&(args_info->equip_lines_arg));
+  free_string_field (&(args_info->equip_lines_orig));
   
   
 
@@ -204,6 +211,8 @@ cmdline_parser_dump(FILE *outfile, struct cmd_params *args_info)
     write_into_file(outfile, "version", 0, 0 );
   if (args_info->filename_given)
     write_into_file(outfile, "filename", args_info->filename_orig, 0);
+  if (args_info->equip_lines_given)
+    write_into_file(outfile, "equip-lines", args_info->equip_lines_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -323,6 +332,12 @@ cmdline_parser_required2 (struct cmd_params *args_info, const char *prog_name, c
   if (! args_info->filename_given)
     {
       fprintf (stderr, "%s: '--filename' ('-f') option required%s\n", prog_name, (additional_error ? additional_error : ""));
+      error_occurred = 1;
+    }
+  
+  if (! args_info->equip_lines_given)
+    {
+      fprintf (stderr, "%s: '--equip-lines' ('-e') option required%s\n", prog_name, (additional_error ? additional_error : ""));
       error_occurred = 1;
     }
   
@@ -961,7 +976,6 @@ int update_arg(void *field, char **orig_field,
   int found;
   char **string_field;
   FIX_UNUSED (field);
-  FIX_UNUSED (stop_char);
 
   stop_char = 0;
   found = 0;
@@ -1069,6 +1083,7 @@ cmdline_parser_internal (
         { "help",	0, NULL, 'h' },
         { "version",	0, NULL, 'V' },
         { "filename",	1, NULL, 'f' },
+        { "equip-lines",	1, NULL, 'e' },
         { 0,  0, 0, 0 }
       };
 
@@ -1077,7 +1092,7 @@ cmdline_parser_internal (
       custom_opterr = opterr;
       custom_optopt = optopt;
 
-      c = custom_getopt_long (argc, argv, "hVf:", long_options, &option_index);
+      c = custom_getopt_long (argc, argv, "hVf:e:", long_options, &option_index);
 
       optarg = custom_optarg;
       optind = custom_optind;
@@ -1106,6 +1121,18 @@ cmdline_parser_internal (
               &(local_args_info.filename_given), optarg, 0, 0, ARG_STRING,
               check_ambiguity, override, 0, 0,
               "filename", 'f',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'e':	/* what to build. supported variants=global-picture,asymptotics.  */
+        
+        
+          if (update_arg( (void *)&(args_info->equip_lines_arg), 
+               &(args_info->equip_lines_orig), &(args_info->equip_lines_given),
+              &(local_args_info.equip_lines_given), optarg, 0, 0, ARG_STRING,
+              check_ambiguity, override, 0, 0,
+              "equip-lines", 'e',
               additional_error))
             goto failure;
         

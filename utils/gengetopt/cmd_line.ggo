@@ -3,3 +3,4 @@ package "saddlepoint_finder_2d"
 purpose "for phd"
 
 option "filename" f "name of file" required string
+option "equip-lines" e "what to build. supported variants=global-picture,asymptotics" required string
